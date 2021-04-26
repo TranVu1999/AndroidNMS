@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="emailNotify" />
+    <item type="id" name="passowrdNotify" />
+    <item type="id" name="nameNotify" />
+    <item type="id" name="confirmPassowrdNotify" />
+</resources>
