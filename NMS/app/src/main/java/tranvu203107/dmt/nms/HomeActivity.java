@@ -1,7 +1,5 @@
 package tranvu203107.dmt.nms;
 
-import androidx.appcompat.app.ActionBar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -15,10 +13,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
@@ -30,8 +26,6 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity {
-    private float[] yData = {15f,30f,55f};  //giá trị % của các Status
-    private String[] xData = {"Pending","Processing","Done"};   //label tương ứng cho các Status
     PieChart pieChart;
 
     String DATABASE_NAME="myDB.sqlite";
@@ -55,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
-        Id = getIntent().getIntExtra("Id", 0);
+        Id = getIntent().getIntExtra("Id", 2);
         txtNameUser.setText("Hi, "+ getName() + " !");
         // map
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,7 +79,31 @@ public class HomeActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(HomeActivity.this, HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(HomeActivity.this, CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(HomeActivity.this, ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(HomeActivity.this, ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(HomeActivity.this, ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
 
 
         // action menu account
@@ -98,16 +116,14 @@ public class HomeActivity extends AppCompatActivity {
         listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-             if(position == 0)
-             {
-                 Intent intent = new Intent(HomeActivity.this,ChangeProfileActivity.class).putExtra("Id", Id);
+             if(position == 0) {
+                 Intent intent = new Intent(HomeActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
                  startActivity(intent);
              }
-                if(position == 1)
-                {
-                    Intent intent = new Intent(HomeActivity.this,ChangePasswordActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
+             if(position == 1) {
+                 Intent intent = new Intent(HomeActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+                 startActivity(intent);
+             }
             }
         });
 
@@ -126,15 +142,34 @@ public class HomeActivity extends AppCompatActivity {
         String query = "select * from USER where Id = " + Id ;
         Cursor cursor   = database.rawQuery(query,null);
         cursor.moveToFirst();
-       String string = cursor.getString(1) ;
-       cursor.close();
-       return string;
+        String string = cursor.getString(1) ;
+        cursor.close();
+        return string;
     }
-    private void addDataSet() {
-        ArrayList<PieEntry> yEntrys = new ArrayList<>();
 
-        for(int i=0;i<yData.length;i++){
-            yEntrys.add(new PieEntry(yData[i],xData[i]));
+    /**
+     * hàm lấy thông tin note và phân tích dưới dạng biểu đồ
+     */
+    private void addDataSet() {
+        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+        ArrayList<String> status = new ArrayList<>();
+        ArrayList<Integer> count = new ArrayList<>();
+        ArrayList<PieEntry> yEntrys = new ArrayList<>();
+        Integer sum = 0;
+
+        Cursor cursor = database.rawQuery("Select Count(NOTE.Id),STATUS.Status from NOTE INNER JOIN STATUS ON NOTE.StatusId = STATUS.Id group by StatusId",null);
+        while(cursor.moveToNext())
+        {
+            String sStatus = cursor.getString(1);
+            status.add(sStatus);
+            Integer sCount = cursor.getInt(0);
+            count.add(sCount);
+            sum+=sCount;
+        }
+        cursor.close();
+
+        for(int i=0;i<status.size();i++){
+            yEntrys.add(new PieEntry( (float)count.get(i)/sum*100,status.get(i)));
         }
 
         PieDataSet pieDataSet = new PieDataSet(yEntrys,"");
@@ -145,6 +180,8 @@ public class HomeActivity extends AppCompatActivity {
         colors.add(Color.GRAY);
         colors.add(Color.RED);
         colors.add(Color.BLUE);
+        colors.add(Color.GREEN);
+        colors.add(Color.YELLOW);
         pieDataSet.setColors(colors);
 
         PieData pieData = new PieData(pieDataSet);
@@ -152,6 +189,5 @@ public class HomeActivity extends AppCompatActivity {
         pieData.setValueTextColor(Color.WHITE);
         pieChart.setData(pieData);
         pieChart.invalidate();
-
     }
 }
