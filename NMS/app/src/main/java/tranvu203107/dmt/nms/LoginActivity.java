@@ -67,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"nhan login",Toast.LENGTH_SHORT).show();
                 Boolean flag = true;
                 String email = txtEmail.getText().toString();
                 String password = txtPassword.getText().toString();
