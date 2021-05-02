@@ -83,23 +83,23 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position == 0) {
-                    Intent intent = new Intent(HomeActivity.this, HomeActivity.class).putExtra("Id", Id);
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
                 if(position == 1) {
-                    Intent intent = new Intent(HomeActivity.this, CategoryActivity.class).putExtra("Id", Id);
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
                 if(position == 2) {
-                    Intent intent = new Intent(HomeActivity.this, ListPriorityActivity.class).putExtra("Id", Id);
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
                 if(position == 3) {
-                    Intent intent = new Intent(HomeActivity.this, ListStatusActivity.class).putExtra("Id", Id);
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
                 if(position == 4) {
-                    Intent intent = new Intent(HomeActivity.this, ListNoteActivity.class).putExtra("Id", Id);
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
             }
@@ -117,11 +117,11 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
              if(position == 0) {
-                 Intent intent = new Intent(HomeActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
+                 Intent intent = new Intent(getApplicationContext(), ChangeProfileActivity.class).putExtra("Id", Id);
                  startActivity(intent);
              }
              if(position == 1) {
-                 Intent intent = new Intent(HomeActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+                 Intent intent = new Intent(getApplicationContext(), ChangePasswordActivity.class).putExtra("Id", Id);
                  startActivity(intent);
              }
             }
