@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,15 +29,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Deque;
 
-import tranvu203107.dmt.nms.model.Priority;
+import tranvu203107.dmt.nms.model.Status;
 
-public class ListPriorityActivity extends AppCompatActivity {
+public class ListStatusActivity extends AppCompatActivity {
 
     //Create database name and her path
     String DATABASE_NAME="myDB.sqlite";
@@ -47,7 +44,7 @@ public class ListPriorityActivity extends AppCompatActivity {
     int Id;
     TextView txtNameUser;
 
-    FloatingActionButton btnAlertDialog_AddPriority;
+    FloatingActionButton btnAlertDialog_AddStatus;
 
     Toolbar toolbar;
     DrawerLayout drawerLayout;
@@ -61,17 +58,17 @@ public class ListPriorityActivity extends AppCompatActivity {
     MenuAdapter menuAdapter;
 
     //Define RecyclerView and Adapter variable
-    RecyclerView priorityListRecycler;
-    PriorityAdapter priorityAdapter;
+    RecyclerView statusListRecycler;
+    StatusAdapter statusAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_priority);
+        setContentView(R.layout.activity_list_status);
+        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
         txtNameUser.setText("Hi, "+ getName() + " !");
-        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
 
         //import myDB.sqlite to project
         processCopy();
@@ -82,7 +79,7 @@ public class ListPriorityActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
         listViewAccount = (ListView) findViewById(R.id.listViewAccount);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
-        priorityListRecycler = findViewById(R.id.priorityList);
+        statusListRecycler = findViewById(R.id.statusList);
 
         // Config toolbar
         setSupportActionBar(toolbar);
@@ -154,9 +151,9 @@ public class ListPriorityActivity extends AppCompatActivity {
         });
 
         // event btn dialog
-        btnAlertDialog_AddPriority = (FloatingActionButton) findViewById(R.id.btn_add_priority);
+        btnAlertDialog_AddStatus = (FloatingActionButton) findViewById(R.id.btn_add_status);
 
-        btnAlertDialog_AddPriority.setOnClickListener(new View.OnClickListener() {
+        btnAlertDialog_AddStatus.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -164,21 +161,21 @@ public class ListPriorityActivity extends AppCompatActivity {
             }
         });
 
-        //Get Priority List for Adapter
-        LoadPriorityList();
+        //Get Status List for Adapter
+        LoadStatusList();
     }
 
-    //Get Priority List for Adapter
-    public void LoadPriorityList(){
-        priorityAdapter = new PriorityAdapter(this, priorityList());
+    //Get Status List for Adapter
+    public void LoadStatusList(){
+        statusAdapter = new StatusAdapter(this, statusList());
 
-        priorityListRecycler.setAdapter(priorityAdapter);
+        statusListRecycler.setAdapter(statusAdapter);
     }
     //Display Dialog
     public void displayAlertDialog() {
 
         LayoutInflater inflater = getLayoutInflater();
-        View alertLayout = inflater.inflate(R.layout.add_edit_priority_dialog, null);
+        View alertLayout = inflater.inflate(R.layout.add_edit_status_dialog, null);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setView(alertLayout);
@@ -197,11 +194,11 @@ public class ListPriorityActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // code for matching password
                 //Toast.makeText(getBaseContext(), "Add clicked", Toast.LENGTH_SHORT).show();
-                EditText txtPriority= alertLayout.findViewById(R.id.editText_priorityName);
-                String priority = txtPriority.getText().toString();
+                EditText txtStatus= alertLayout.findViewById(R.id.editText_statusName);
+                String status = txtStatus.getText().toString();
                 String CreatedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(System.currentTimeMillis()));
-                addPriority(new Priority(0, priority, CreatedDate));
-                LoadPriorityList();
+                addStatus(new Status(0, status, CreatedDate));
+                LoadStatusList();
             }
         });
         AlertDialog dialog = alert.create();
@@ -215,14 +212,14 @@ public class ListPriorityActivity extends AppCompatActivity {
             File dbFile = getDatabasePath(DATABASE_NAME);
             if (!dbFile.exists()) {
                 copyDatabaseFromAsset();
-                Toast.makeText(ListPriorityActivity.this, "Sao chép thành công", Toast.LENGTH_LONG).show();
+                Toast.makeText(ListStatusActivity.this, "Sao chép thành công", Toast.LENGTH_LONG).show();
             }
             else
-                Toast.makeText(ListPriorityActivity.this,"Khong sao chep",Toast.LENGTH_LONG).show();
+                Toast.makeText(ListStatusActivity.this,"Khong sao chep",Toast.LENGTH_LONG).show();
         }
         catch (Exception ex)
         {
-            Toast.makeText(ListPriorityActivity.this,ex.toString(),Toast.LENGTH_LONG).show();
+            Toast.makeText(ListStatusActivity.this,ex.toString(),Toast.LENGTH_LONG).show();
             Log.e("LOI",ex.toString());
         }
     }
@@ -256,31 +253,31 @@ public class ListPriorityActivity extends AppCompatActivity {
 
     }
 
-    //Hien thi priority
-    private ArrayList<Priority> priorityList() {
+    //Hien thi status
+    private ArrayList<Status> statusList() {
         //database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
-        Cursor cursor = database.rawQuery("select * from Priority",null);
+        Cursor cursor = database.rawQuery("select * from Status",null);
         //aP.clear();
-        ArrayList<Priority> arrPriority = new ArrayList<Priority>();
-        Toast.makeText(ListPriorityActivity.this,"Da load",Toast.LENGTH_LONG).show();
+        ArrayList<Status> arrStatus = new ArrayList<Status>();
+        Toast.makeText(ListStatusActivity.this,"Da load",Toast.LENGTH_LONG).show();
         while(cursor.moveToNext())
         {
             int id = cursor.getInt(0);
-            String priorityName = cursor.getString(1);
+            String statusName = cursor.getString(1);
             String createdDate = cursor.getString(2);
-            Priority priority = new Priority(id, priorityName, createdDate);
-            arrPriority.add(priority);
+            Status status = new Status(id, statusName, createdDate);
+            arrStatus.add(status);
         }
         cursor.close();
-        return arrPriority;
+        return arrStatus;
     }
 
-    //Thêm Priority
-    private void addPriority(Priority priority){
+    //Thêm Status
+    private void addStatus(Status status){
         ContentValues values=new ContentValues();
-        values.put("priority",priority.getPriority());
-        values.put("createdDate", priority.getCreatedDate());
-        database.insert("Priority",null,values);
+        values.put("status",status.getStatus());
+        values.put("createdDate", status.getCreatedDate());
+        database.insert("Status",null,values);
     }
 
     private String getName(){
