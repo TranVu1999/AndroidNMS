@@ -68,10 +68,12 @@ public class ListPriorityActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_priority);
+
         //truyen id
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
         txtNameUser.setText("Hi, "+ getName() + " !");
+
 
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
 
@@ -107,6 +109,32 @@ public class ListPriorityActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -146,11 +174,13 @@ public class ListPriorityActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position == 0) {
+
                     Intent intent = new Intent(ListPriorityActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
                 if(position == 1) {
                     Intent intent = new Intent(ListPriorityActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+
                     startActivity(intent);
                 }
             }
@@ -285,7 +315,7 @@ public class ListPriorityActivity extends AppCompatActivity {
         values.put("createdDate", priority.getCreatedDate());
         database.insert("Priority",null,values);
     }
-    //Get name
+
     private String getName(){
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
         String query = "select * from USER where Id = " + Id ;

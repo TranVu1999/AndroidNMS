@@ -19,7 +19,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity {
-    //Truyen id
+
     String DATABASE_NAME="myDB.sqlite";
     String DB_PATH_SUFFIX="/databases/";
     SQLiteDatabase database = null;
@@ -40,10 +40,11 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
-    //truyen id
+
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
         txtNameUser.setText("Hi, "+ getName() + " !");
+
         // map
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -72,6 +73,32 @@ public class CategoryActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -111,16 +138,19 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position == 0) {
+
                     Intent intent = new Intent(CategoryActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
                     startActivity(intent);
                 }
                 if(position == 1) {
                     Intent intent = new Intent(CategoryActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+
                     startActivity(intent);
                 }
             }
         });
     }
+
     private String getName(){
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
         String query = "select * from USER where Id = " + Id ;
