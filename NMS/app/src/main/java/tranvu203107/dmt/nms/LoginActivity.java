@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"nhan login",Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"nhan login",Toast.LENGTH_SHORT).show();
                 Boolean flag = true;
                 String email = txtEmail.getText().toString();
                 String password = txtPassword.getText().toString();
@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 // All good
-                if(false){
+                if(flag == true){
                     String query = "select * from USER where Email = '" + txtEmail.getText().toString() + "' and Password = '" + txtPassword.getText().toString() +"'";
                     Cursor cursor = null;
                     cursor = database.rawQuery(query,null);
