@@ -155,8 +155,18 @@ public class RegisterActivity extends AppCompatActivity {
                     else
                         Toast.makeText(RegisterActivity.this,"Fail Register",Toast.LENGTH_LONG).show();
                 }
-                    else
-                        Toast.makeText(RegisterActivity.this,"Account already exists",Toast.LENGTH_LONG).show();
+                    else{
+                        try {
+                            TextView emailNotify = findViewById(R.id.emailNotify);
+                            ((ViewGroup) emailNotify.getParent()).removeView(emailNotify);
+                        }catch (Exception e){}
+
+
+                        TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                        txtEmailErr.setId(R.id.emailNotify);
+                        txtEmailErr.setText("Account already exists");
+                        emailContainer.addView(txtEmailErr);
+                    }
                     cursor.close();
                 }}
 
