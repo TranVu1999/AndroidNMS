@@ -156,6 +156,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Toast.makeText(RegisterActivity.this,"Fail Register",Toast.LENGTH_LONG).show();
                 }
                     else{
+//                        Toast.makeText(RegisterActivity.this,"Fail Register",Toast.LENGTH_LONG).show();
                         try {
                             TextView emailNotify = findViewById(R.id.emailNotify);
                             ((ViewGroup) emailNotify.getParent()).removeView(emailNotify);
