@@ -1,6 +1,7 @@
 package tranvu203107.dmt.nms;
 
 import android.content.Context;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +28,11 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // gán view
         View view = LayoutInflater.from(context).inflate(R.layout.activity_status_item, parent, false);
-        return new StatusAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull StatusAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Gán dữ liêuk
         Status status = listStatus.get(position);
 
@@ -44,7 +45,7 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
         return listStatus.size(); // trả item tại vị trí postion
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView textStatus, textCreatedDate;
 
         public ViewHolder(@NonNull View itemView) {
@@ -52,6 +53,17 @@ public class StatusAdapter extends RecyclerView.Adapter<StatusAdapter.ViewHolder
             // Ánh xạ view
             textStatus = itemView.findViewById(R.id.txtView_Status);
             textCreatedDate = itemView.findViewById(R.id.txtView_CreatedDate);
+
+            //
+            itemView.setOnCreateContextMenuListener(this);
+        }
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+            menu.setHeaderTitle("Chọn thao tác");
+            menu.add(getAdapterPosition(), 0, 0, "Sửa");//groupId, itemId, order, title
+            menu.add(getAdapterPosition(), 1, 0, "Xóa");
+
         }
     }
 }

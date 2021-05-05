@@ -1,6 +1,7 @@
 package tranvu203107.dmt.nms;
 
 import android.content.Context;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +34,10 @@ public class PriorityAdapter extends RecyclerView.Adapter<PriorityAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // Gán dữ liêuk
-        Priority priority = listPriority.get(position);
+        Priority Priority = listPriority.get(position);
 
-        holder.textPriority.setText(priority.getPriority());
-        holder.textCreatedDate.setText(priority.getCreatedDate());
+        holder.textPriority.setText(Priority.getPriority());
+        holder.textCreatedDate.setText(Priority.getCreatedDate());
     }
 
     @Override
@@ -44,7 +45,7 @@ public class PriorityAdapter extends RecyclerView.Adapter<PriorityAdapter.ViewHo
         return listPriority.size(); // trả item tại vị trí postion
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         TextView textPriority, textCreatedDate;
 
         public ViewHolder(@NonNull View itemView) {
@@ -52,6 +53,17 @@ public class PriorityAdapter extends RecyclerView.Adapter<PriorityAdapter.ViewHo
             // Ánh xạ view
             textPriority = itemView.findViewById(R.id.txtView_Priority);
             textCreatedDate = itemView.findViewById(R.id.txtView_CreatedDate);
+
+            //
+            itemView.setOnCreateContextMenuListener(this);
+        }
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+            menu.setHeaderTitle("Chọn thao tác");
+            menu.add(getAdapterPosition(), 0, 0, "Sửa");//groupId, itemId, order, title
+            menu.add(getAdapterPosition(), 1, 0, "Xóa");
+
         }
     }
 }

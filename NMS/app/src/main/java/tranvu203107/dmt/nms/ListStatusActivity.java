@@ -14,9 +14,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,9 +32,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Deque;
 
 import tranvu203107.dmt.nms.model.Status;
 
@@ -41,8 +46,6 @@ public class ListStatusActivity extends AppCompatActivity {
     String DATABASE_NAME="myDB.sqlite";
     String DB_PATH_SUFFIX="/databases/";
     SQLiteDatabase database = null;
-    int Id;
-    TextView txtNameUser;
 
     FloatingActionButton btnAlertDialog_AddStatus;
 
@@ -57,23 +60,19 @@ public class ListStatusActivity extends AppCompatActivity {
     ArrayList<ItemMenu> arrListAccount;
     MenuAdapter menuAdapter;
 
+    //Define item index variable
+    private static final int MENU_ITEM_EDIT = 0;
+    private static final int MENU_ITEM_DELETE = 1;
+
     //Define RecyclerView and Adapter variable
-    RecyclerView statusListRecycler;
-    StatusAdapter statusAdapter;
+    RecyclerView StatusListRecycler;
+    StatusAdapter StatusAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_status);
-        //truyen id
-        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
-        Id = getIntent().getIntExtra("Id", 2);
-        txtNameUser.setText("Hi, "+ getName() + " !");
-
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
-        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
-        Id = getIntent().getIntExtra("Id", 2);
-        txtNameUser.setText("Hi, "+ getName() + " !");
 
         //import myDB.sqlite to project
         processCopy();
@@ -84,7 +83,7 @@ public class ListStatusActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
         listViewAccount = (ListView) findViewById(R.id.listViewAccount);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
-        statusListRecycler = findViewById(R.id.statusList);
+        StatusListRecycler = findViewById(R.id.statusList);
 
         // Config toolbar
         setSupportActionBar(toolbar);
@@ -101,65 +100,12 @@ public class ListStatusActivity extends AppCompatActivity {
         arrList = new ArrayList<ItemMenu>();
         arrList.add(new ItemMenu("Home", R.drawable.ic_action_home));
         arrList.add(new ItemMenu("Category", R.drawable.ic_action_category));
-        arrList.add(new ItemMenu("Priority", R.drawable.ic_action_priority));
+        arrList.add(new ItemMenu("Status", R.drawable.ic_action_status));
         arrList.add(new ItemMenu("Status", R.drawable.ic_action_status));
         arrList.add(new ItemMenu("Note", R.drawable.ic_action_note));
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0) {
-                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 1) {
-                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 2) {
-                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 3) {
-                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 4) {
-                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-            }
-        });
-
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0) {
-                    Intent intent = new Intent(ListStatusActivity.this, HomeActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 1) {
-                    Intent intent = new Intent(ListStatusActivity.this, CategoryActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 2) {
-                    Intent intent = new Intent(ListStatusActivity.this, ListPriorityActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 3) {
-                    Intent intent = new Intent(ListStatusActivity.this, ListStatusActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 4) {
-                    Intent intent = new Intent(ListStatusActivity.this, ListNoteActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-            }
-        });
-
 
         // action menu account
         arrListAccount = new ArrayList<ItemMenu>();
@@ -168,21 +114,6 @@ public class ListStatusActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrListAccount);
         listViewAccount.setAdapter(menuAdapter);
-        listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0) {
-
-                    Intent intent = new Intent(ListStatusActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
-                    startActivity(intent);
-                }
-                if(position == 1) {
-                    Intent intent = new Intent(ListStatusActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
-
-                    startActivity(intent);
-                }
-            }
-        });
 
         // event btn dialog
         btnAlertDialog_AddStatus = (FloatingActionButton) findViewById(R.id.btn_add_status);
@@ -191,7 +122,7 @@ public class ListStatusActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                displayAlertDialog();
+                displayAlertDialog(0, 0);
             }
         });
 
@@ -201,15 +132,24 @@ public class ListStatusActivity extends AppCompatActivity {
 
     //Get Status List for Adapter
     public void LoadStatusList(){
-        statusAdapter = new StatusAdapter(this, statusList());
-
-        statusListRecycler.setAdapter(statusAdapter);
+        StatusAdapter = new StatusAdapter(this, StatusList());
+        StatusListRecycler.setAdapter(StatusAdapter);
+        // Register the RecyclerView for Context menu
+        registerForContextMenu(StatusListRecycler);
     }
+
     //Display Dialog
-    public void displayAlertDialog() {
+    public void displayAlertDialog(int flag, int statusId) {
 
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.add_edit_status_dialog, null);
+        EditText txtStatus= alertLayout.findViewById(R.id.editText_statusName);
+
+        //Đổ dữ liệu lên dialog khi sửa Status
+        if(flag == 1){
+            Status status = getStatusById(statusId);
+            txtStatus.setText(status.getStatus());
+        }
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setView(alertLayout);
@@ -222,22 +162,51 @@ public class ListStatusActivity extends AppCompatActivity {
             }
         });
 
-        alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+        if(flag == 0)
+        {
+            alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // code for matching password
-                //Toast.makeText(getBaseContext(), "Add clicked", Toast.LENGTH_SHORT).show();
-                EditText txtStatus= alertLayout.findViewById(R.id.editText_statusName);
-                String status = txtStatus.getText().toString();
-                String CreatedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(System.currentTimeMillis()));
-                addStatus(new Status(0, status, CreatedDate));
-                LoadStatusList();
-            }
-        });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String Status = txtStatus.getText().toString();
+                    String CreatedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(System.currentTimeMillis()));
+                    addStatus(new Status(0, Status, CreatedDate));
+                    LoadStatusList();
+                }
+            });
+        }
+        else {
+            alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    editStatus(new Status(statusId, txtStatus.getText().toString(), ""));
+                    LoadStatusList();
+                }
+            });
+        }
         AlertDialog dialog = alert.create();
         dialog.show();
     }
+
+    //Xử lí click item trên Context menu
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        AdapterView.AdapterContextMenuInfo
+                info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if(item.getItemId() == MENU_ITEM_EDIT){
+            displayAlertDialog(1, StatusList().get(item.getGroupId()).getId());
+        }
+        else if(item.getItemId() == MENU_ITEM_DELETE){
+            deleteStatus(StatusList().get(item.getGroupId()).getId());
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
 
     //Import sqlite database to project
     private void processCopy()
@@ -287,34 +256,65 @@ public class ListStatusActivity extends AppCompatActivity {
 
     }
 
-    //Hien thi status
-    private ArrayList<Status> statusList() {
+    //Hien thi Status
+    private ArrayList<Status> StatusList() {
         //database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
         Cursor cursor = database.rawQuery("select * from Status",null);
         //aP.clear();
         ArrayList<Status> arrStatus = new ArrayList<Status>();
-        Toast.makeText(ListStatusActivity.this,"Da load",Toast.LENGTH_LONG).show();
+        //Toast.makeText(ListStatusActivity.this,"Da load",Toast.LENGTH_LONG).show();
         while(cursor.moveToNext())
         {
             int id = cursor.getInt(0);
-            String statusName = cursor.getString(1);
+            String StatusName = cursor.getString(1);
             String createdDate = cursor.getString(2);
-            Status status = new Status(id, statusName, createdDate);
-            arrStatus.add(status);
+            Status Status = new Status(id, StatusName, createdDate);
+            arrStatus.add(Status);
         }
         cursor.close();
         return arrStatus;
     }
 
     //Thêm Status
-    private void addStatus(Status status){
+    private void addStatus(Status Status){
         ContentValues values=new ContentValues();
-        values.put("status",status.getStatus());
-        values.put("createdDate", status.getCreatedDate());
+        values.put("Status",Status.getStatus());
+        values.put("createdDate", Status.getCreatedDate());
         database.insert("Status",null,values);
     }
 
-    private String getName(){
+    //Lấy Satus theo id
+    private Status getStatusById(int id){
+        Cursor cursor = database.rawQuery("select * from Status where id ='" + id + "'",null);
+        cursor.moveToFirst();
+        id = cursor.getInt(0);
+        String StatusName = cursor.getString(1);
+        String createdDate = cursor.getString(2);
+        Status Status = new Status(id, StatusName, createdDate);
+        return Status;
+    }
+
+    //Sửa Status
+    private void editStatus(Status status){
+
+        //database.execSQL("Update Status Set status = '" + status.getStatus() + "' Where id = '" + status.getId() + "'",null);
+        ContentValues values = new ContentValues();
+        values.put("Status",status.getStatus());
+
+        // updating row
+        database.update("Status", values, "id" + " = ?",
+                new String[]{String.valueOf(status.getId())});
+        Toast.makeText(ListStatusActivity.this, "Đã lưu",Toast.LENGTH_LONG).show();
+    }
+    //Xóa Status
+    private  void deleteStatus(int id){
+        database.delete("Status", "id" + " = ?",
+                new String[] { String.valueOf(id) });
+        LoadStatusList();
+        Toast.makeText(ListStatusActivity.this, "Đã xóa",Toast.LENGTH_LONG).show();
+    }
+
+    private String getName(int Id){
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
         String query = "select * from USER where Id = " + Id ;
         Cursor cursor   = database.rawQuery(query,null);
