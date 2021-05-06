@@ -89,38 +89,40 @@
                     <!-- Row 1-->
                     <!-- Col 1-->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvExercise"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_columnWeight="1"
                         android:layout_rowWeight="1"
-                        android:layout_marginBottom="16dp"
+                        android:layout_columnWeight="1"
                         android:layout_marginRight="16dp"
-                        app:cardElevation="8dp"
-                        app:cardCornerRadius="8dp">
-                        
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
+
                         <LinearLayout
-                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_margin="16dp"
+                            android:gravity="center"
                             android:orientation="vertical"
-                            android:weightSum="10"
-                            android:gravity="center">
+                            android:weightSum="10">
 
                             <ImageView
-                                android:layout_weight="8"
                                 android:layout_width="120dp"
                                 android:layout_height="0dp"
-                                android:src="@drawable/ic_action_exercise"
-                                android:layout_marginBottom="10dp"/>
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="8"
+                                android:src="@drawable/ic_action_exercise" />
 
                             <TextView
-                                android:layout_weight="2"
+                                android:id="@+id/txtExercise"
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
+                                android:layout_weight="2"
                                 android:text="Exercise"
-                                android:textSize="18sp"
-                                android:textColor="#666"/>
+                                android:textColor="#666"
+                                android:textSize="18sp" />
 
                         </LinearLayout>
 
@@ -128,38 +130,40 @@
 
                     <!-- Col 2-->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvHomeWork"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_columnWeight="1"
                         android:layout_rowWeight="1"
-                        android:layout_marginBottom="16dp"
+                        android:layout_columnWeight="1"
                         android:layout_marginRight="16dp"
-                        app:cardElevation="8dp"
-                        app:cardCornerRadius="8dp">
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
 
                         <LinearLayout
-                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_margin="16dp"
+                            android:gravity="center"
                             android:orientation="vertical"
-                            android:weightSum="10"
-                            android:gravity="center">
+                            android:weightSum="10">
 
                             <ImageView
-                                android:layout_weight="8"
                                 android:layout_width="120dp"
                                 android:layout_height="0dp"
-                                android:src="@drawable/ic_action_homework"
-                                android:layout_marginBottom="10dp"/>
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="8"
+                                android:src="@drawable/ic_action_homework" />
 
                             <TextView
-                                android:layout_weight="2"
+                                android:id="@+id/txtHomeWork"
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
+                                android:layout_weight="2"
                                 android:text="Homework"
-                                android:textSize="18sp"
-                                android:textColor="#666"/>
+                                android:textColor="#666"
+                                android:textSize="18sp" />
 
                         </LinearLayout>
 
@@ -168,38 +172,40 @@
                     <!-- Row 2-->
                     <!-- Col 1-->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvMeeting"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_columnWeight="1"
                         android:layout_rowWeight="1"
-                        android:layout_marginBottom="16dp"
+                        android:layout_columnWeight="1"
                         android:layout_marginRight="16dp"
-                        app:cardElevation="8dp"
-                        app:cardCornerRadius="8dp">
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
 
                         <LinearLayout
-                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_margin="16dp"
+                            android:gravity="center"
                             android:orientation="vertical"
-                            android:weightSum="10"
-                            android:gravity="center">
+                            android:weightSum="10">
 
                             <ImageView
-                                android:layout_weight="8"
                                 android:layout_width="120dp"
                                 android:layout_height="0dp"
-                                android:src="@drawable/ic_action_meeting"
-                                android:layout_marginBottom="10dp"/>
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="8"
+                                android:src="@drawable/ic_action_meeting" />
 
                             <TextView
-                                android:layout_weight="2"
+                                android:id="@+id/txtMeeting"
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
+                                android:layout_weight="2"
                                 android:text="Meeting"
-                                android:textSize="18sp"
-                                android:textColor="#666"/>
+                                android:textColor="#666"
+                                android:textSize="18sp" />
 
                         </LinearLayout>
 
@@ -207,38 +213,40 @@
 
                     <!-- Col 2-->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvEntertainment"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_columnWeight="1"
                         android:layout_rowWeight="1"
-                        android:layout_marginBottom="16dp"
+                        android:layout_columnWeight="1"
                         android:layout_marginRight="16dp"
-                        app:cardElevation="8dp"
-                        app:cardCornerRadius="8dp">
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
 
                         <LinearLayout
-                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_margin="16dp"
+                            android:gravity="center"
                             android:orientation="vertical"
-                            android:weightSum="10"
-                            android:gravity="center">
+                            android:weightSum="10">
 
                             <ImageView
-                                android:layout_weight="8"
                                 android:layout_width="120dp"
                                 android:layout_height="0dp"
-                                android:src="@drawable/ic_action_entertainment"
-                                android:layout_marginBottom="10dp"/>
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="8"
+                                android:src="@drawable/ic_action_entertainment" />
 
                             <TextView
-                                android:layout_weight="2"
+                                android:id="@+id/txtEntertainment"
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
+                                android:layout_weight="2"
                                 android:text="Entertainment"
-                                android:textSize="18sp"
-                                android:textColor="#666"/>
+                                android:textColor="#666"
+                                android:textSize="18sp" />
 
                         </LinearLayout>
 
@@ -248,38 +256,40 @@
                     <!-- Row 3-->
                     <!-- Col 1-->
                     <androidx.cardview.widget.CardView
+                        android:id="@+id/cvMyJob"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:layout_columnWeight="1"
                         android:layout_rowWeight="1"
-                        android:layout_marginBottom="16dp"
+                        android:layout_columnWeight="1"
                         android:layout_marginRight="16dp"
-                        app:cardElevation="8dp"
-                        app:cardCornerRadius="8dp">
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="8dp">
 
                         <LinearLayout
-                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical|center_horizontal"
                             android:layout_margin="16dp"
+                            android:gravity="center"
                             android:orientation="vertical"
-                            android:weightSum="10"
-                            android:gravity="center">
+                            android:weightSum="10">
 
                             <ImageView
-                                android:layout_weight="8"
                                 android:layout_width="120dp"
                                 android:layout_height="0dp"
-                                android:src="@drawable/ic_action_job"
-                                android:layout_marginBottom="10dp"/>
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="8"
+                                android:src="@drawable/ic_action_job" />
 
                             <TextView
-                                android:layout_weight="2"
+                                android:id="@+id/txtMyJob"
                                 android:layout_width="wrap_content"
                                 android:layout_height="0dp"
+                                android:layout_weight="2"
                                 android:text="My Job"
-                                android:textSize="18sp"
-                                android:textColor="#666"/>
+                                android:textColor="#666"
+                                android:textSize="18sp" />
 
                         </LinearLayout>
 

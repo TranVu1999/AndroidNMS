@@ -33,12 +33,12 @@ public class DemoDialogActivity extends AppCompatActivity {
         dialog = new Dialog(this);
         spinnerCate = (Spinner)findViewById(R.id.spinnerCate);
 
-        btnAddCate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddCategoryDialog();
-            }
-        });
+//        btnAddCate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openAddCategoryDialog();
+//            }
+//        });
 //        btnAddNote.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -68,25 +68,25 @@ public class DemoDialogActivity extends AppCompatActivity {
 
     }
 
-    private void openAddCategoryDialog() {
-//        dialog.setContentView(R.layout.win_dialog);
-        dialog.setContentView(R.layout.layout_add_cate_form);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        Button btnCloseDialog = dialog.findViewById(R.id.btnCloseDialog);
-        Button btnSaveData = dialog.findViewById(R.id.btnSaveData);
-
-        dialog.show();
-    }
-
-    private void openAddNoteDialog() {
-        dialog.setContentView(R.layout.layout_add_note);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        Button btnCloseDialog = dialog.findViewById(R.id.btnCloseDialog);
-        Button btnSaveData = dialog.findViewById(R.id.btnSaveData);
-
-        dialog.show();
-    }
+//    private void openAddCategoryDialog() {
+////        dialog.setContentView(R.layout.win_dialog);
+//        dialog.setContentView(R.layout.layout_add_cate_form);
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//
+//        Button btnCloseDialog = dialog.findViewById(R.id.btnCloseDialog);
+//        Button btnSaveData = dialog.findViewById(R.id.btnSaveData);
+//
+//        dialog.show();
+//    }
+//
+//    private void openAddNoteDialog() {
+//        dialog.setContentView(R.layout.layout_add_note);
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//
+//        Button btnCloseDialog = dialog.findViewById(R.id.btnCloseDialog);
+//        Button btnSaveData = dialog.findViewById(R.id.btnSaveData);
+//
+//        dialog.show();
+//    }
 
 }
