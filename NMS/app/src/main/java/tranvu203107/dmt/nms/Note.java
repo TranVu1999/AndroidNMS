@@ -8,7 +8,7 @@ public class Note {
     private String planDate;
     private String createDate;
 
-    public Note(String name, String category, String priority, String status, String planDate, String createDate) {
+    public Note(String status, String category, String name, String priority, String planDate, String createDate) {
         this.name = name;
         this.category = category;
         this.priority = priority;
