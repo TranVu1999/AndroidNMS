@@ -508,7 +508,13 @@ public class ListNoteActivity extends AppCompatActivity {
     }
     public void eCloseAddNote(View view)
     {
-        finish();
+        dialog.cancel();
+        onResume();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showListNote();
+    }
 }
