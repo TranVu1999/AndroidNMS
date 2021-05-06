@@ -2,6 +2,7 @@ package tranvu203107.dmt.nms;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -31,15 +32,20 @@ public class CategoryActivity extends AppCompatActivity {
 
     ListView listView;
     ListView listViewAccount;
-
+    CardView cvExcercise,cvHomeWork,cvMeeting,cvEntertainment,cvMyJob;
+    TextView txtExcercise,txtHomeWork,txtMeeting,txtEntertainment,txtMyJob;
     ArrayList<ItemMenu> arrList;
     ArrayList<ItemMenu> arrListAccount;
     MenuAdapter menuAdapter;
+
+    public static String cateChosed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
+        addControls();
+        addEvents();
 
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
@@ -159,5 +165,61 @@ public class CategoryActivity extends AppCompatActivity {
         String string = cursor.getString(1) ;
         cursor.close();
         return string;
+    }
+
+    private void addEvents() {
+        cvExcercise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cateChosed="Exercise";
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                startActivity(intent);
+            }
+        });
+        cvHomeWork.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cateChosed="Homework";
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                startActivity(intent);
+            }
+        });
+        cvMeeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cateChosed="Meeting";
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                startActivity(intent);
+            }
+        });
+        cvEntertainment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cateChosed="Entertainment";
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                startActivity(intent);
+            }
+        });
+        cvMyJob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cateChosed="My Job";
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void addControls() {
+        cvExcercise = (CardView) findViewById(R.id.cvExercise);
+        cvHomeWork= (CardView)findViewById(R.id.cvHomeWork);
+        cvMeeting = (CardView)findViewById(R.id.cvMeeting);
+        cvEntertainment = (CardView)findViewById(R.id.cvEntertainment);
+        cvMyJob = (CardView)findViewById(R.id.cvMyJob);
+        txtExcercise =(TextView)findViewById(R.id.txtExercise);
+        txtHomeWork = (TextView)findViewById(R.id.txtHomeWork);
+        txtMeeting = (TextView)findViewById(R.id.txtMeeting);
+        txtEntertainment = (TextView)findViewById(R.id.txtEntertainment);
+        txtMyJob = (TextView)findViewById(R.id.txtMyJob);
     }
 }

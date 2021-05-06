@@ -18,6 +18,7 @@
         app:layout_constraintStart_toStartOf="@+id/editText_priorityName"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <EditText
         android:id="@+id/editText_priorityName"
         android:layout_width="318dp"
@@ -29,4 +30,14 @@
         android:text=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_validatePriority"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#F60505"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/editText_priorityName"
+        app:layout_constraintTop_toBottomOf="@+id/editText_priorityName" />
 </androidx.constraintlayout.widget.ConstraintLayout>
