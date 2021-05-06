@@ -7,8 +7,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,6 +21,11 @@ import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity {
 
+    String DATABASE_NAME="myDB.sqlite";
+    String DB_PATH_SUFFIX="/databases/";
+    SQLiteDatabase database = null;
+    int Id;
+    TextView txtNameUser;
     Toolbar toolbar;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -38,6 +46,10 @@ public class CategoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_category);
         addControls();
         addEvents();
+
+        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
+        Id = getIntent().getIntExtra("Id", 2);
+        txtNameUser.setText("Hi, "+ getName() + " !");
 
         // map
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -67,6 +79,59 @@ public class CategoryActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(CategoryActivity.this, HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(CategoryActivity.this, ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(CategoryActivity.this, ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(CategoryActivity.this, ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         // action menu account
         arrListAccount = new ArrayList<ItemMenu>();
@@ -75,6 +140,31 @@ public class CategoryActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrListAccount);
         listViewAccount.setAdapter(menuAdapter);
+        listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+
+                    Intent intent = new Intent(CategoryActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(CategoryActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+    private String getName(){
+        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+        String query = "select * from USER where Id = " + Id ;
+        Cursor cursor   = database.rawQuery(query,null);
+        cursor.moveToFirst();
+        String string = cursor.getString(1) ;
+        cursor.close();
+        return string;
     }
 
     private void addEvents() {
@@ -113,7 +203,7 @@ public class CategoryActivity extends AppCompatActivity {
         cvMyJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cateChosed="MyJob";
+                cateChosed="My Job";
                 Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
                 startActivity(intent);
             }

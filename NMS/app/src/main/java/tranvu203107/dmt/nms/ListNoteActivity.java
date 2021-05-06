@@ -7,12 +7,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +26,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -37,6 +40,10 @@ import java.util.ArrayList;
 import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
 
 public class ListNoteActivity extends AppCompatActivity {
+
+    int Id;
+    TextView txtNameUser;
+
     Toolbar toolbar;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -77,10 +84,18 @@ public class ListNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_note);
+
         addControls();
         processCopy();
 
+        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
+        Id = getIntent().getIntExtra("Id", 2);
+        txtNameUser.setText("Hi, "+ getName() + " !");
 
+        //truyen id
+        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
+        Id = getIntent().getIntExtra("Id", 2);
+        txtNameUser.setText("Hi, "+ getName() + " !");
 
         // map
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -111,6 +126,59 @@ public class ListNoteActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(ListNoteActivity.this, HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(ListNoteActivity.this, CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(ListNoteActivity.this, ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(ListNoteActivity.this, ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(ListNoteActivity.this, ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         // action menu account
         arrListAccount = new ArrayList<ItemMenu>();
@@ -119,6 +187,21 @@ public class ListNoteActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrListAccount);
         listViewAccount.setAdapter(menuAdapter);
+        listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+
+                    Intent intent = new Intent(ListNoteActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(ListNoteActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+
+                    startActivity(intent);
+                }
+            }
+        });
 
         showListNote();
 
@@ -299,148 +382,30 @@ public class ListNoteActivity extends AppCompatActivity {
     }
 
     private void showListNote() {
-        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+        database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
         arrNote = new ArrayList<Note>();
-        switch (cateChosed) {
-            case "Exercise": {
-                Cursor cursor = database.rawQuery("SELECT Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
-                        "FROM NOTE\n" +
-                        "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
-                        "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
-                        "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
-                        "WHERE CATEGORY.Name =\"Exercise\"", null);
-                //adapter.clear();
-                //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
-                while (cursor.moveToNext()) {
-                    String status = cursor.getString(0);
-                    String cateName = cursor.getString(1);
-                    String noteName = cursor.getString(2);
-                    String priorityName = cursor.getString(3);
-                    String planDate = cursor.getString(4);
-                    String createdDate = cursor.getString(5);
-                    arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
-                }
-                cursor.close();
-                noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
-                noteListRecycler.setAdapter(noteAdapter);
-                break;
-            }
-            case "Homework": {
-                Cursor cursor = database.rawQuery("SELECT Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
-                        "FROM NOTE\n" +
-                        "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
-                        "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
-                        "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
-                        "WHERE CATEGORY.Name =\"Homework\"", null);
-                //adapter.clear();
-                //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
-                while (cursor.moveToNext()) {
-                    String status = cursor.getString(0);
-                    String cateName = cursor.getString(1);
-                    String noteName = cursor.getString(2);
-                    String priorityName = cursor.getString(3);
-                    String planDate = cursor.getString(4);
-                    String createdDate = cursor.getString(5);
-                    arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
-                }
-                cursor.close();
-                noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
-                noteListRecycler.setAdapter(noteAdapter);
-                break;
-            }
-            case "Meeting": {
-                Cursor cursor = database.rawQuery("SELECT Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
-                        "FROM NOTE\n" +
-                        "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
-                        "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
-                        "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
-                        "WHERE CATEGORY.Name =\"Meeting\"", null);
-                //adapter.clear();
-                //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
-                while (cursor.moveToNext()) {
-                    String status = cursor.getString(0);
-                    String cateName = cursor.getString(1);
-                    String noteName = cursor.getString(2);
-                    String priorityName = cursor.getString(3);
-                    String planDate = cursor.getString(4);
-                    String createdDate = cursor.getString(5);
-                    arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
-                }
-                cursor.close();
-                noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
-                noteListRecycler.setAdapter(noteAdapter);
-                break;
-            }
-            case "Entertainment": {
-                Cursor cursor = database.rawQuery("SELECT Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
-                        "FROM NOTE\n" +
-                        "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
-                        "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
-                        "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
-                        "WHERE CATEGORY.Name =\"Entertainment\"", null);
-                //adapter.clear();
-                //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
-                while (cursor.moveToNext()) {
-                    String status = cursor.getString(0);
-                    String cateName = cursor.getString(1);
-                    String noteName = cursor.getString(2);
-                    String priorityName = cursor.getString(3);
-                    String planDate = cursor.getString(4);
-                    String createdDate = cursor.getString(5);
-                    arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
-                }
-                cursor.close();
-                noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
-                noteListRecycler.setAdapter(noteAdapter);
-                break;
-            }
-            case "MyJob": {
-                Cursor cursor = database.rawQuery("SELECT Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
-                        "FROM NOTE\n" +
-                        "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
-                        "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
-                        "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
-                        "WHERE CATEGORY.Name =\"My Job\"", null);
-                //adapter.clear();
-                //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
-                while (cursor.moveToNext()) {
-                    String status = cursor.getString(0);
-                    String cateName = cursor.getString(1);
-                    String noteName = cursor.getString(2);
-                    String priorityName = cursor.getString(3);
-                    String planDate = cursor.getString(4);
-                    String createdDate = cursor.getString(5);
-                    arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
-                }
-                cursor.close();
-                noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
-                noteListRecycler.setAdapter(noteAdapter);
-                break;
-            }
-            default: {
-                Cursor cursor = database.rawQuery("SELECT Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
-                        "FROM NOTE\n" +
-                        "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
-                        "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
-                        "INNER JOIN Status ON NOTE.StatusId=Status.id", null);
-                //adapter.clear();
-                //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
-                while (cursor.moveToNext()) {
-                    String status = cursor.getString(0);
-                    String cateName = cursor.getString(1);
-                    String noteName = cursor.getString(2);
-                    String priorityName = cursor.getString(3);
-                    String planDate = cursor.getString(4);
-                    String createdDate = cursor.getString(5);
-                    arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
-                }
-                cursor.close();
-                noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
-                noteListRecycler.setAdapter(noteAdapter);
-                break;
-            }
+        Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
+                "FROM NOTE\n" +
+                "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
+                "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
+                "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
+                "INNER JOIN USER ON NOTE.UserId = USER.Id\n" +
+                "WHERE CATEGORY.Name = '"+cateChosed+"' AND USER.Id = '" + Id + "'", null);
+        //adapter.clear();
+        //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
+        while (cursor.moveToNext()) {
+            String status = cursor.getString(1);
+            String cateName = cursor.getString(2);
+            String noteName = cursor.getString(3);
+            String priorityName = cursor.getString(4);
+            String planDate = cursor.getString(5);
+            String createdDate = cursor.getString(6);
+            arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
         }
-    }
+        cursor.close();
+        noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
+        noteListRecycler.setAdapter(noteAdapter);
+        }
     private void processCopy()
     {
         try {
@@ -491,7 +456,7 @@ public class ListNoteActivity extends AppCompatActivity {
         ContentValues newValues = new ContentValues();
         // newValues.put("Id",8);
         newValues.put("Name",noteName);
-        newValues.put("UserId",1);
+        newValues.put("UserId",Id);
         newValues.put("CateId",cateIndex);
         newValues.put("PriorityId",priIndex);
         newValues.put("StatusId",stIndex);
@@ -516,5 +481,15 @@ public class ListNoteActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         showListNote();
+    }
+
+    private String getName(){
+        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+        String query = "select * from USER where Id = " + Id ;
+        Cursor cursor   = database.rawQuery(query,null);
+        cursor.moveToFirst();
+        String string = cursor.getString(1) ;
+        cursor.close();
+        return string;
     }
 }

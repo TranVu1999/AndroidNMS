@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -132,9 +133,13 @@ public class RegisterActivity extends AppCompatActivity {
                     confirmPasswordContainer.addView(txtConfirmPasswordErr);
                 }
 
-
                 if(flag){
                     database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+                    // Check  email account had register
+                    String query = "select * from USER where Email = '" + txtEmail.getText().toString()  +"'";
+                    Cursor cursor = null;
+                    cursor = database.rawQuery(query,null);
+                    if(cursor.getCount() == 0){
                     ContentValues values = new ContentValues();
                     values.put("name",txtName.getText().toString());
                     values.put("email",txtEmail.getText().toString());
@@ -143,13 +148,29 @@ public class RegisterActivity extends AppCompatActivity {
                     long kq = database.insert("USER",null, values);
                     database.close();
                     if(kq>0) {
-                        Toast.makeText(RegisterActivity.this, "Thêm thành công", Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, "Successfully Register", Toast.LENGTH_LONG).show();
                         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_right);
                     }
                     else
-                        Toast.makeText(RegisterActivity.this,"Thêm thất bại",Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this,"Fail Register",Toast.LENGTH_LONG).show();
+                }
+                    else{
+                        try {
+                            TextView emailNotify = findViewById(R.id.emailNotify);
+                            ((ViewGroup) emailNotify.getParent()).removeView(emailNotify);
+                        }catch (Exception e){}
+
+
+                        TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                        txtEmailErr.setId(R.id.emailNotify);
+                        txtEmailErr.setText("Account already exists");
+                        emailContainer.addView(txtEmailErr);
+                    }
+                    cursor.close();
                 }}
+
+
         });
     }
     public void onLoginClick(View v){
