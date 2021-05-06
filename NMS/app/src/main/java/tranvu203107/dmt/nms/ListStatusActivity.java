@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -46,6 +48,7 @@ public class ListStatusActivity extends AppCompatActivity {
     String DATABASE_NAME="myDB.sqlite";
     String DB_PATH_SUFFIX="/databases/";
     SQLiteDatabase database = null;
+    int Id;
 
     FloatingActionButton btnAlertDialog_AddStatus;
 
@@ -73,6 +76,8 @@ public class ListStatusActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_status);
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+        Id = getIntent().getIntExtra("Id", 2);
+
 
         //import myDB.sqlite to project
         processCopy();
@@ -100,12 +105,38 @@ public class ListStatusActivity extends AppCompatActivity {
         arrList = new ArrayList<ItemMenu>();
         arrList.add(new ItemMenu("Home", R.drawable.ic_action_home));
         arrList.add(new ItemMenu("Category", R.drawable.ic_action_category));
-        arrList.add(new ItemMenu("Status", R.drawable.ic_action_status));
+        arrList.add(new ItemMenu("Priority", R.drawable.ic_action_priority));
         arrList.add(new ItemMenu("Status", R.drawable.ic_action_status));
         arrList.add(new ItemMenu("Note", R.drawable.ic_action_note));
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         // action menu account
         arrListAccount = new ArrayList<ItemMenu>();
@@ -114,6 +145,21 @@ public class ListStatusActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrListAccount);
         listViewAccount.setAdapter(menuAdapter);
+        listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+
+                    Intent intent = new Intent(ListStatusActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(ListStatusActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+
+                    startActivity(intent);
+                }
+            }
+        });
 
         // event btn dialog
         btnAlertDialog_AddStatus = (FloatingActionButton) findViewById(R.id.btn_add_status);
@@ -139,16 +185,17 @@ public class ListStatusActivity extends AppCompatActivity {
     }
 
     //Display Dialog
-    public void displayAlertDialog(int flag, int statusId) {
+    public void displayAlertDialog(int flag, int StatusId) {
 
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.add_edit_status_dialog, null);
         EditText txtStatus= alertLayout.findViewById(R.id.editText_statusName);
+        TextView textView_validateStatus = alertLayout.findViewById(R.id.textView_validateStatus);
 
         //Đổ dữ liệu lên dialog khi sửa Status
-        if(flag == 1){
-            Status status = getStatusById(statusId);
-            txtStatus.setText(status.getStatus());
+        if(flag == 1){ //Xử lý sửa
+            Status Status = getStatusById(StatusId);
+            txtStatus.setText(Status.getStatus());
         }
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -162,7 +209,26 @@ public class ListStatusActivity extends AppCompatActivity {
             }
         });
 
-        if(flag == 0)
+        //Xác thực đầu vào
+        txtStatus.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+                String Status = txtStatus.getText().toString();
+                if (isStatusAlive(Status) == true){
+                    textView_validateStatus.setText("Status với tên này đã tồn tại!");
+                }
+                else if(Status.equals(""))
+                    textView_validateStatus.setText("Không được để trống");
+                else
+                    textView_validateStatus.setText("");
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        if(flag == 0)  //Xử lý thêm
         {
             alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 
@@ -170,8 +236,15 @@ public class ListStatusActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     String Status = txtStatus.getText().toString();
                     String CreatedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(System.currentTimeMillis()));
-                    addStatus(new Status(0, Status, CreatedDate));
-                    LoadStatusList();
+                    if (textView_validateStatus.getText().toString().equals("") && !Status.equals("")){
+                        addStatus(new Status(0, Status, CreatedDate, Id));
+                        //textView_validateStatus.setText("");
+                        LoadStatusList();
+                        Toast.makeText(getBaseContext(), "Thêm thành công!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(getBaseContext(), "Thêm thất bại!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -180,8 +253,14 @@ public class ListStatusActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    editStatus(new Status(statusId, txtStatus.getText().toString(), ""));
-                    LoadStatusList();
+                    String Status = txtStatus.getText().toString();
+                    if(textView_validateStatus.getText().toString().equals("") && !Status.equals("")){
+                        editStatus(new Status(StatusId, txtStatus.getText().toString(), "", Id));
+                        LoadStatusList();
+                    }
+                    else{
+                        Toast.makeText(getBaseContext(), "Cập nhật thất bại!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -259,7 +338,7 @@ public class ListStatusActivity extends AppCompatActivity {
     //Hien thi Status
     private ArrayList<Status> StatusList() {
         //database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
-        Cursor cursor = database.rawQuery("select * from Status",null);
+        Cursor cursor = database.rawQuery("select * from Status where UserId ='" + Id + "' and IsDeleted = 0",null);
         //aP.clear();
         ArrayList<Status> arrStatus = new ArrayList<Status>();
         //Toast.makeText(ListStatusActivity.this,"Da load",Toast.LENGTH_LONG).show();
@@ -268,7 +347,7 @@ public class ListStatusActivity extends AppCompatActivity {
             int id = cursor.getInt(0);
             String StatusName = cursor.getString(1);
             String createdDate = cursor.getString(2);
-            Status Status = new Status(id, StatusName, createdDate);
+            Status Status = new Status(id, StatusName, createdDate, Id);
             arrStatus.add(Status);
         }
         cursor.close();
@@ -280,47 +359,62 @@ public class ListStatusActivity extends AppCompatActivity {
         ContentValues values=new ContentValues();
         values.put("Status",Status.getStatus());
         values.put("createdDate", Status.getCreatedDate());
+        values.put("UserId",Status.getUserId());
         database.insert("Status",null,values);
     }
 
-    //Lấy Satus theo id
+    //Lấy Status theo id
     private Status getStatusById(int id){
         Cursor cursor = database.rawQuery("select * from Status where id ='" + id + "'",null);
         cursor.moveToFirst();
         id = cursor.getInt(0);
         String StatusName = cursor.getString(1);
         String createdDate = cursor.getString(2);
-        Status Status = new Status(id, StatusName, createdDate);
+        Status Status = new Status(id, StatusName, createdDate, Id);
         return Status;
     }
 
     //Sửa Status
-    private void editStatus(Status status){
+    private void editStatus(Status Status){
 
-        //database.execSQL("Update Status Set status = '" + status.getStatus() + "' Where id = '" + status.getId() + "'",null);
+        //database.execSQL("Update Status Set Status = '" + Status.getStatus() + "' Where id = '" + Status.getId() + "'",null);
         ContentValues values = new ContentValues();
-        values.put("Status",status.getStatus());
+        values.put("Status",Status.getStatus());
 
         // updating row
         database.update("Status", values, "id" + " = ?",
-                new String[]{String.valueOf(status.getId())});
+                new String[]{String.valueOf(Status.getId())});
         Toast.makeText(ListStatusActivity.this, "Đã lưu",Toast.LENGTH_LONG).show();
     }
+
     //Xóa Status
     private  void deleteStatus(int id){
-        database.delete("Status", "id" + " = ?",
-                new String[] { String.valueOf(id) });
+        ContentValues values = new ContentValues();
+        values.put("IsDeleted",1);
+
+        // updating row
+        database.update("Status", values, "id" + " = ?",
+                new String[]{String.valueOf(id)});
         LoadStatusList();
         Toast.makeText(ListStatusActivity.this, "Đã xóa",Toast.LENGTH_LONG).show();
+
+//        database.delete("Status", "id" + " = ?",
+//                new String[] { String.valueOf(id) });
+//        LoadStatusList();
+//        Toast.makeText(ListStatusActivity.this, "Đã xóa",Toast.LENGTH_LONG).show();
     }
 
-    private String getName(int Id){
-        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
-        String query = "select * from USER where Id = " + Id ;
+    //Kiểm tra Status đã tồn tại hay chưa
+    private boolean isStatusAlive(String s){
+        String query = "select * from Status where Status = '" + s +"' and IsDeleted = 0";
         Cursor cursor   = database.rawQuery(query,null);
-        cursor.moveToFirst();
-        String string = cursor.getString(1) ;
-        cursor.close();
-        return string;
+        if(cursor.getCount() == 1){
+            cursor.moveToFirst();
+            String string = cursor.getString(1) ;
+            cursor.close();
+            return true;
+        }
+        return false;
     }
 }
+

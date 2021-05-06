@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -46,6 +48,7 @@ public class ListPriorityActivity extends AppCompatActivity {
     String DATABASE_NAME="myDB.sqlite";
     String DB_PATH_SUFFIX="/databases/";
     SQLiteDatabase database = null;
+    int Id;
 
     FloatingActionButton btnAlertDialog_AddPriority;
 
@@ -73,6 +76,8 @@ public class ListPriorityActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_priority);
         database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+        Id = getIntent().getIntExtra("Id", 2);
+
 
         //import myDB.sqlite to project
         processCopy();
@@ -101,11 +106,37 @@ public class ListPriorityActivity extends AppCompatActivity {
         arrList.add(new ItemMenu("Home", R.drawable.ic_action_home));
         arrList.add(new ItemMenu("Category", R.drawable.ic_action_category));
         arrList.add(new ItemMenu("Priority", R.drawable.ic_action_priority));
-        arrList.add(new ItemMenu("Priority", R.drawable.ic_action_priority));
+        arrList.add(new ItemMenu("Status", R.drawable.ic_action_status));
         arrList.add(new ItemMenu("Note", R.drawable.ic_action_note));
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrList);
         listView.setAdapter(menuAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(getApplicationContext(), CategoryActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 2) {
+                    Intent intent = new Intent(getApplicationContext(), ListPriorityActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 3) {
+                    Intent intent = new Intent(getApplicationContext(), ListStatusActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 4) {
+                    Intent intent = new Intent(getApplicationContext(), ListNoteActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+            }
+        });
+
 
         // action menu account
         arrListAccount = new ArrayList<ItemMenu>();
@@ -114,6 +145,21 @@ public class ListPriorityActivity extends AppCompatActivity {
 
         menuAdapter = new MenuAdapter(this, R.layout.item_row_menu, arrListAccount);
         listViewAccount.setAdapter(menuAdapter);
+        listViewAccount.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0) {
+
+                    Intent intent = new Intent(ListPriorityActivity.this, ChangeProfileActivity.class).putExtra("Id", Id);
+                    startActivity(intent);
+                }
+                if(position == 1) {
+                    Intent intent = new Intent(ListPriorityActivity.this, ChangePasswordActivity.class).putExtra("Id", Id);
+
+                    startActivity(intent);
+                }
+            }
+        });
 
         // event btn dialog
         btnAlertDialog_AddPriority = (FloatingActionButton) findViewById(R.id.btn_add_priority);
@@ -144,9 +190,10 @@ public class ListPriorityActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View alertLayout = inflater.inflate(R.layout.add_edit_priority_dialog, null);
         EditText txtPriority= alertLayout.findViewById(R.id.editText_priorityName);
+        TextView textView_validatePriority = alertLayout.findViewById(R.id.textView_validatePriority);
 
         //Đổ dữ liệu lên dialog khi sửa Priority
-        if(flag == 1){
+        if(flag == 1){ //Xử lý sửa
             Priority Priority = getPriorityById(PriorityId);
             txtPriority.setText(Priority.getPriority());
         }
@@ -162,7 +209,26 @@ public class ListPriorityActivity extends AppCompatActivity {
             }
         });
 
-        if(flag == 0)
+        //Xác thực đầu vào
+        txtPriority.addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {
+                String Priority = txtPriority.getText().toString();
+                if (isPriorityAlive(Priority) == true){
+                    textView_validatePriority.setText("Priority với tên này đã tồn tại!");
+                }
+                else if(Priority.equals(""))
+                    textView_validatePriority.setText("Không được để trống");
+                else
+                    textView_validatePriority.setText("");
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        if(flag == 0)  //Xử lý thêm
         {
             alert.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 
@@ -170,8 +236,15 @@ public class ListPriorityActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     String Priority = txtPriority.getText().toString();
                     String CreatedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(System.currentTimeMillis()));
-                    addPriority(new Priority(0, Priority, CreatedDate));
-                    LoadPriorityList();
+                    if (textView_validatePriority.getText().toString().equals("") && !Priority.equals("")){
+                        addPriority(new Priority(0, Priority, CreatedDate, Id));
+                        //textView_validatePriority.setText("");
+                        LoadPriorityList();
+                        Toast.makeText(getBaseContext(), "Thêm thành công!", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(getBaseContext(), "Thêm thất bại!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -180,8 +253,14 @@ public class ListPriorityActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    editPriority(new Priority(PriorityId, txtPriority.getText().toString(), ""));
-                    LoadPriorityList();
+                    String Priority = txtPriority.getText().toString();
+                    if(textView_validatePriority.getText().toString().equals("") && !Priority.equals("")){
+                        editPriority(new Priority(PriorityId, txtPriority.getText().toString(), "", Id));
+                        LoadPriorityList();
+                    }
+                    else{
+                        Toast.makeText(getBaseContext(), "Cập nhật thất bại!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -259,7 +338,7 @@ public class ListPriorityActivity extends AppCompatActivity {
     //Hien thi Priority
     private ArrayList<Priority> PriorityList() {
         //database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
-        Cursor cursor = database.rawQuery("select * from Priority",null);
+        Cursor cursor = database.rawQuery("select * from Priority where UserId ='" + Id + "' and IsDeleted = 0",null);
         //aP.clear();
         ArrayList<Priority> arrPriority = new ArrayList<Priority>();
         //Toast.makeText(ListPriorityActivity.this,"Da load",Toast.LENGTH_LONG).show();
@@ -268,7 +347,7 @@ public class ListPriorityActivity extends AppCompatActivity {
             int id = cursor.getInt(0);
             String PriorityName = cursor.getString(1);
             String createdDate = cursor.getString(2);
-            Priority Priority = new Priority(id, PriorityName, createdDate);
+            Priority Priority = new Priority(id, PriorityName, createdDate, Id);
             arrPriority.add(Priority);
         }
         cursor.close();
@@ -280,17 +359,18 @@ public class ListPriorityActivity extends AppCompatActivity {
         ContentValues values=new ContentValues();
         values.put("Priority",Priority.getPriority());
         values.put("createdDate", Priority.getCreatedDate());
+        values.put("UserId",Priority.getUserId());
         database.insert("Priority",null,values);
     }
 
-    //Lấy Satus theo id
+    //Lấy Priority theo id
     private Priority getPriorityById(int id){
         Cursor cursor = database.rawQuery("select * from Priority where id ='" + id + "'",null);
         cursor.moveToFirst();
         id = cursor.getInt(0);
         String PriorityName = cursor.getString(1);
         String createdDate = cursor.getString(2);
-        Priority Priority = new Priority(id, PriorityName, createdDate);
+        Priority Priority = new Priority(id, PriorityName, createdDate, Id);
         return Priority;
     }
 
@@ -306,22 +386,35 @@ public class ListPriorityActivity extends AppCompatActivity {
                 new String[]{String.valueOf(Priority.getId())});
         Toast.makeText(ListPriorityActivity.this, "Đã lưu",Toast.LENGTH_LONG).show();
     }
+
     //Xóa Priority
     private  void deletePriority(int id){
-        database.delete("Priority", "id" + " = ?",
-                new String[] { String.valueOf(id) });
+        ContentValues values = new ContentValues();
+        values.put("IsDeleted",1);
+
+        // updating row
+        database.update("Priority", values, "id" + " = ?",
+                new String[]{String.valueOf(id)});
         LoadPriorityList();
         Toast.makeText(ListPriorityActivity.this, "Đã xóa",Toast.LENGTH_LONG).show();
+
+//        database.delete("Priority", "id" + " = ?",
+//                new String[] { String.valueOf(id) });
+//        LoadPriorityList();
+//        Toast.makeText(ListPriorityActivity.this, "Đã xóa",Toast.LENGTH_LONG).show();
     }
 
-    private String getName(int Id){
-        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
-        String query = "select * from USER where Id = " + Id ;
+    //Kiểm tra Priority đã tồn tại hay chưa
+    private boolean isPriorityAlive(String s){
+        String query = "select * from Priority where Priority = '" + s +"' and IsDeleted = 0";
         Cursor cursor   = database.rawQuery(query,null);
-        cursor.moveToFirst();
-        String string = cursor.getString(1) ;
-        cursor.close();
-        return string;
+        if(cursor.getCount() == 1){
+            cursor.moveToFirst();
+            String string = cursor.getString(1) ;
+            cursor.close();
+            return true;
+        }
+        return false;
     }
 }
 
