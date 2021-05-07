@@ -44,7 +44,7 @@
                 <EditText
                     android:id="@+id/editNoteName"
                     style="@style/modifiedEditText"
-                    android:hint="@string/login_email_hint"
+                    android:hint="Note name"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:textSize="18sp" />

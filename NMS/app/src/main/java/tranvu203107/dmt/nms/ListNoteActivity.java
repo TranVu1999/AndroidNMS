@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -17,6 +19,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -53,7 +56,9 @@ public class ListNoteActivity extends AppCompatActivity {
     ListView listViewAccount;
     EditText textAddNote;
     EditText editNoteName;
+    TextView lblPlanDate;
     Button btnCloseDialogs;
+    Button btnSaveDataAdd;
 
     ArrayList<ItemMenu> arrList;
     ArrayList<ItemMenu> arrListAccount;
@@ -80,6 +85,10 @@ public class ListNoteActivity extends AppCompatActivity {
     public static String DATABASE_NAME="myDB.sqlite";
     public static String DB_PATH_SUFFIX="/databases/";
     public static SQLiteDatabase database = null;
+
+    //Define item index variable
+    private static final int MENU_ITEM_EDIT = 0;
+    private static final int MENU_ITEM_DELETE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -406,7 +415,8 @@ public class ListNoteActivity extends AppCompatActivity {
             String priorityName = cursor.getString(4);
             String planDate = cursor.getString(5);
             String createdDate = cursor.getString(6);
-            arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate));
+            String iD = cursor.getString(7);
+            arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate,iD));
         }
         cursor.close();
         // to load all listnote
@@ -500,5 +510,219 @@ public class ListNoteActivity extends AppCompatActivity {
         String string = cursor.getString(1) ;
         cursor.close();
         return string;
+    }
+
+    //Xử lí click item trên Context menu
+    @Override
+    public boolean onContextItemSelected(MenuItem item){
+        AdapterView.AdapterContextMenuInfo
+                info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if(item.getItemId() == MENU_ITEM_EDIT){
+            int tempID = arrNote.get(item.getGroupId()).getiD(); 
+            Note tempNote = new Note(arrNote.get(item.getGroupId()).getStatus(),
+                                    arrNote.get(item.getGroupId()).getCategory(),
+                                    arrNote.get(item.getGroupId()).getName(),
+                                    arrNote.get(item.getGroupId()).getPriority(),
+                                    arrNote.get(item.getGroupId()).getPlanDate(),
+                                    arrNote.get(item.getGroupId()).getCreateDate(),
+                                    String.valueOf(tempID));
+            editNoteDialog(tempNote);
+        }
+        else if(item.getItemId() == MENU_ITEM_DELETE){
+            deleteNote(arrNote.get(item.getGroupId()).getiD());
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+
+    //Xóa Note
+    private  void deleteNote(int id){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        builder.setMessage("Xóa note này?");
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // delete note
+                database.delete("Note","id" + " = ?", new String[]{String.valueOf(id)});
+                showListNote();
+                Toast.makeText(getApplicationContext(), "Đã xóa",Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+    private void editNoteDialog(Note tempNote) {
+        dialog.setContentView(R.layout.layout_add_note);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false);
+        editNoteName=(EditText) dialog.findViewById(R.id.editNoteName);
+        lblPlanDate=(TextView) dialog.findViewById(R.id.lblPlanDate);
+        btnCloseDialogs=(Button)dialog.findViewById(R.id.btnCloseDialog);
+        btnSaveDataAdd=(Button)dialog.findViewById(R.id.btnSaveDataAdd);
+        Button btnCloseDialog = dialog.findViewById(R.id.btnCloseDialog);
+        Button btnSaveData = dialog.findViewById(R.id.btnSaveDataAdd);
+        Button btnSelectPlanDate = dialog.findViewById(R.id.btnSelectPlanDate);
+
+        //trick to get spinner index
+        int cateSelectIndex = 0;
+        int prioritySelectIndex = 0;
+        int statusSelectIndex = 0;
+
+        btnSelectPlanDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSelectDateDialog();
+            }
+        });
+
+        database = openOrCreateDatabase(DATABASE_NAME,MODE_PRIVATE,null);
+
+        OptionAdapter optionsAdapter;
+        spinnerCate = dialog.findViewById(R.id.spinnerCate);
+        spinnerPriority = dialog.findViewById(R.id.spinnerPrioroty);
+        spinnerStatus = dialog.findViewById(R.id.spinnerStatus);
+        ArrayList<Option> arrOptionCate;
+        arrOptionCate = new ArrayList<Option>();
+        // action cate
+        Cursor cursor = database.rawQuery("SELECT Id,NAME\n" +
+                "FROM CATEGORY",null);
+        while(cursor.moveToNext())
+        {
+            int id=cursor.getInt(0);
+            String cateName = cursor.getString(1);
+            arrOptionCate.add(new Option(cateName,id+""));
+            if(cateName.equals(tempNote.getCategory())){
+                cateSelectIndex=arrOptionCate.size()-1;
+            }
+        }
+        cursor.close();
+
+        ArrayList<Option> arrOptionPriority;
+        // action Priority
+        arrOptionPriority = new ArrayList<Option>();
+
+        Cursor cursorPriority = database.rawQuery("SELECT Id,Priority\n" +
+                "FROM PRIORITY",null);
+        while(cursorPriority.moveToNext())
+        {
+            int id=cursorPriority.getInt(0);
+            String priorityName = cursorPriority.getString(1);
+            arrOptionPriority.add(new Option(priorityName,id+""));
+            if(priorityName.equals(tempNote.getPriority())){
+                prioritySelectIndex=arrOptionPriority.size()-1;
+            }
+        }
+        cursorPriority.close();
+
+
+        ArrayList<Option> arrOptionStatus;
+        // action Status
+        arrOptionStatus = new ArrayList<Option>();
+        Cursor cursorStatus = database.rawQuery("SELECT Id,Status \n" +
+                "FROM STATUS",null);
+        while(cursorStatus.moveToNext())
+        {
+            int id=cursorStatus.getInt(0);
+            String statusName = cursorStatus.getString(1);
+            arrOptionStatus.add(new Option(statusName,id+""));
+            if(statusName.equals(tempNote.getStatus())){
+                statusSelectIndex=arrOptionStatus.size()-1;
+            }
+        }
+        cursorPriority.close();
+
+        optionsAdapter = new OptionAdapter(this, R.layout.layout_option_item, arrOptionCate);
+        spinnerCate.setAdapter(optionsAdapter);
+
+        optionsAdapter = new OptionAdapter(this, R.layout.layout_option_item, arrOptionPriority);
+        spinnerPriority.setAdapter(optionsAdapter);
+
+        optionsAdapter = new OptionAdapter(this, R.layout.layout_option_item, arrOptionStatus);
+        spinnerStatus.setAdapter(optionsAdapter);
+
+        spinnerCate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                cateIndex=position+1;
+                cateName= arrOptionCate.get(position).title.toString();
+                Toast.makeText(getApplicationContext(), "You pick category "+ cateName , Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
+        spinnerPriority.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                priIndex=position+1;
+                priorityName = arrOptionPriority.get(position).title.toString();
+                Toast.makeText(getApplicationContext(), "You pick priority " + priorityName, Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
+        spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                stIndex=position+1;
+                statusName = arrOptionStatus.get(position).title.toString();
+                Toast.makeText(getApplicationContext(), "You pick status " + statusName, Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+        });
+
+
+        ///sau khi load xong dialog trống, thêm các giá trị của note vào
+        editNoteName.setText(tempNote.getName());
+        optionsAdapter = new OptionAdapter(this, R.layout.layout_option_item, arrOptionCate);
+        spinnerCate.setSelection(cateSelectIndex);
+        spinnerPriority.setSelection(prioritySelectIndex);
+        spinnerStatus.setSelection(statusSelectIndex);
+        lblPlanDate.setText(tempNote.getPlanDate());
+        btnSaveDataAdd.setText("Save");
+        btnSaveDataAdd.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String noteName =editNoteName.getText().toString();
+                planDate= (String) lblPlanDate.getText();
+                ContentValues newValues = new ContentValues();
+                // newValues.put("Id",8);
+                newValues.put("Name",noteName);
+                newValues.put("CateId",cateIndex);
+                newValues.put("PriorityId",priIndex);
+                newValues.put("StatusId",stIndex);
+                newValues.put("PlanDate",planDate);
+
+                long kq =ListNoteActivity.database.update("NOTE", newValues,"id" + " = ?",new String[]{String.valueOf(tempNote.getiD())});
+                if(kq>0) {
+                    Toast.makeText(ListNoteActivity.this, "Sửa thành công", Toast.LENGTH_LONG).show();
+                    showListNote();
+                }
+                else
+                    Toast.makeText(ListNoteActivity.this,"Sửa thất bại",Toast.LENGTH_LONG).show();
+            }
+        });
+
+        dialog.show();
     }
 }
