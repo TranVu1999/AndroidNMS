@@ -397,7 +397,7 @@ public class ListNoteActivity extends AppCompatActivity {
         if(cateChosed.compareTo("All")!=0){
             categoryName = "CATEGORY.Name = '"+cateChosed+"' AND ";
         }
-        Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
+        Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate,NOTE.Id\n" +
                 "FROM NOTE\n" +
                 "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
                 "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
