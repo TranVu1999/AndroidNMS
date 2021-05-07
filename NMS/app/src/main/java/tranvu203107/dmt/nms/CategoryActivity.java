@@ -172,7 +172,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Exercise";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("Id", Id);
                 startActivity(intent);
             }
         });
@@ -180,7 +180,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Homework";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("Id", Id);
                 startActivity(intent);
             }
         });
@@ -188,7 +188,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Meeting";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("Id", Id);
                 startActivity(intent);
             }
         });
@@ -196,7 +196,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Entertainment";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("Id", Id);
                 startActivity(intent);
             }
         });
@@ -204,7 +204,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="My Job";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("Id", Id);
                 startActivity(intent);
             }
         });
