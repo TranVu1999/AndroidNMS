@@ -38,7 +38,7 @@ public class CategoryActivity extends AppCompatActivity {
     ArrayList<ItemMenu> arrListAccount;
     MenuAdapter menuAdapter;
 
-    String cateChosed = "All";
+    public static String cateChosed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +46,7 @@ public class CategoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_category);
         addControls();
         addEvents();
+
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
         txtNameUser.setText("Hi, "+ getName() + " !");
@@ -171,7 +172,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Exercise";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("cateChosed",cateChosed);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
                 startActivity(intent);
             }
         });
@@ -179,7 +180,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Homework";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("cateChosed",cateChosed);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
                 startActivity(intent);
             }
         });
@@ -187,7 +188,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Meeting";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("cateChosed",cateChosed);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
                 startActivity(intent);
             }
         });
@@ -195,7 +196,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="Entertainment";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("cateChosed",cateChosed);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
                 startActivity(intent);
             }
         });
@@ -203,7 +204,7 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cateChosed="My Job";
-                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class).putExtra("cateChosed",cateChosed);
+                Intent intent = new Intent(CategoryActivity.this,ListNoteActivity.class);
                 startActivity(intent);
             }
         });

@@ -40,12 +40,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-//import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
+import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
 
 public class ListNoteActivity extends AppCompatActivity {
 
     int Id;
-    String cateChosed = "All";
     TextView txtNameUser;
 
     Toolbar toolbar;
@@ -98,15 +97,13 @@ public class ListNoteActivity extends AppCompatActivity {
         addControls();
         processCopy();
 
+        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
+        Id = getIntent().getIntExtra("Id", 2);
+        txtNameUser.setText("Hi, "+ getName() + " !");
 
         //truyen id
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
-            cateChosed = getIntent().getStringExtra("cateChosed");
-        if(cateChosed == null)
-        {
-            cateChosed = "All";
-        }
         txtNameUser.setText("Hi, "+ getName() + " !");
 
         // map
@@ -216,6 +213,7 @@ public class ListNoteActivity extends AppCompatActivity {
         });
 
         showListNote();
+
     }
 
     private void addControls() {
@@ -405,7 +403,7 @@ public class ListNoteActivity extends AppCompatActivity {
                 "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
                 "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
                 "INNER JOIN USER ON NOTE.UserId = USER.Id\n" +
-                "WHERE " + categoryName + "USER.Id = '" + Id + "'", null);
+                "WHERE CATEGORY.Name = '"+cateChosed+"' AND USER.Id = '" + Id + "'", null);
         //adapter.clear();
         //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
         while (cursor.moveToNext()) {
@@ -419,11 +417,8 @@ public class ListNoteActivity extends AppCompatActivity {
             arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate,iD));
         }
         cursor.close();
-        // to load all listnote
-       // cateChosed = "All";
         noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
         noteListRecycler.setAdapter(noteAdapter);
-
         }
     private void processCopy()
     {
