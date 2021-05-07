@@ -73,6 +73,50 @@ public class RegisterActivity extends AppCompatActivity {
                 String name = txtName.getText().toString();
                 String confirmPassword = txtConfirmPassword.getText().toString();
 
+                //Declare error textview
+                //Name
+                try {
+                    TextView nameNotify = findViewById(R.id.nameNotify);
+                    ((ViewGroup) nameNotify.getParent()).removeView(nameNotify);
+                }catch (Exception e){}
+                TextView txtNameErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                txtNameErr.setId(R.id.nameNotify);
+                txtNameErr.setText("");
+                emailContainer.addView(txtNameErr);
+                //Email
+
+                try {
+                    TextView emailNotify = findViewById(R.id.emailNotify);
+                    ((ViewGroup) emailNotify.getParent()).removeView(emailNotify);
+                }catch (Exception e){}
+
+
+                TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                txtEmailErr.setId(R.id.emailNotify);
+                txtEmailErr.setText("");
+                emailContainer.addView(txtEmailErr);
+                //Password
+              try {
+                    TextView passwordNotify = findViewById(R.id.passowrdNotify);
+                    ((ViewGroup) passwordNotify.getParent()).removeView(passwordNotify);
+                }catch (Exception e){}
+
+
+                TextView txtPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                txtPasswordErr.setId(R.id.passowrdNotify);
+                txtPasswordErr.setText("");
+                passwordContainer.addView(txtPasswordErr);
+                //ConfirmPassword
+                try {
+                    TextView confrimPasswordNotify = findViewById(R.id.confirmPassowrdNotify);
+                    ((ViewGroup) confrimPasswordNotify.getParent()).removeView(confrimPasswordNotify);
+                }catch (Exception e){}
+
+
+                TextView txtConfirmPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                txtConfirmPasswordErr.setId(R.id.confirmPassowrdNotify);
+                txtConfirmPasswordErr.setText("");
+                confirmPasswordContainer.addView(txtConfirmPasswordErr);
                 // Check name
                 if(name.isEmpty()){
                     flag = false;
@@ -80,10 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                         TextView nameNotify = findViewById(R.id.nameNotify);
                         ((ViewGroup) nameNotify.getParent()).removeView(nameNotify);
                     }catch (Exception e){}
-
-
-                    TextView txtNameErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
-                    txtNameErr.setId(R.id.nameNotify);
+                   // TextView txtNameErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
                     txtNameErr.setText("You must not leave name blank");
                     nameContainer.addView(txtNameErr);
                 }
@@ -97,13 +138,26 @@ public class RegisterActivity extends AppCompatActivity {
                     }catch (Exception e){}
 
 
-                    TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
-                    txtEmailErr.setId(R.id.emailNotify);
+                    //TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                    //txtEmailErr.setId(R.id.emailNotify);
                     txtEmailErr.setText("You must not leave email blank");
                     emailContainer.addView(txtEmailErr);
                 }
 
                 // Check password
+               if(password.compareTo(confirmPassword)!=0){
+                    flag = false;
+                    try {
+                        TextView passwordNotify = findViewById(R.id.passowrdNotify);
+                        ((ViewGroup) passwordNotify.getParent()).removeView(passwordNotify);
+                    }catch (Exception e){}
+
+
+                   // TextView txtPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                    //txtPasswordErr.setId(R.id.passowrdNotify);
+                    txtPasswordErr.setText("Password and ConfirmPassword must match!");
+                    passwordContainer.addView(txtPasswordErr);
+                }
                 if(password.isEmpty()){
                     flag = false;
                     try {
@@ -112,11 +166,12 @@ public class RegisterActivity extends AppCompatActivity {
                     }catch (Exception e){}
 
 
-                    TextView txtPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
-                    txtPasswordErr.setId(R.id.passowrdNotify);
+                   // TextView txtPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                    //txtPasswordErr.setId(R.id.passowrdNotify);
                     txtPasswordErr.setText("You must not leave password blank");
                     passwordContainer.addView(txtPasswordErr);
                 }
+
 
                 // Check confirm password
                 if(confirmPassword.isEmpty()){
@@ -127,8 +182,8 @@ public class RegisterActivity extends AppCompatActivity {
                     }catch (Exception e){}
 
 
-                    TextView txtConfirmPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
-                    txtConfirmPasswordErr.setId(R.id.confirmPassowrdNotify);
+                    //TextView txtConfirmPasswordErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                    //txtConfirmPasswordErr.setId(R.id.confirmPassowrdNotify);
                     txtConfirmPasswordErr.setText("You must not leave confirm password blank");
                     confirmPasswordContainer.addView(txtConfirmPasswordErr);
                 }
@@ -162,8 +217,8 @@ public class RegisterActivity extends AppCompatActivity {
                         }catch (Exception e){}
 
 
-                        TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
-                        txtEmailErr.setId(R.id.emailNotify);
+                        //TextView txtEmailErr = new TextView(RegisterActivity.this, null, 0, R.style.notifyWarning);
+                        //txtEmailErr.setId(R.id.emailNotify);
                         txtEmailErr.setText("Account already exists");
                         emailContainer.addView(txtEmailErr);
                     }
