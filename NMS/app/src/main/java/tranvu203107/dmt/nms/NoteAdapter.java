@@ -33,10 +33,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         // Gán dữ liêuk
         Note note = listNote.get(position);
 
-        holder.textStatus.setText(note.getStatus());
-        holder.textName.setText(note.getName());
-        holder.textPlanDate.setText(note.getPlanDate());
-        holder.textCreateDate.setText(note.getCreateDate());
+        holder.txtStatus.setText(note.getStatus());
+        holder.txtName.setText(note.getName());
+        holder.txtCategory.setText(note.getCategory());
+        holder.txtPriority.setText(note.getPriority());
+        holder.txtPlanDate.setText(note.getPlanDate());
+        holder.txtCreatedDate.setText(note.getCreateDate());
     }
 
     @Override
@@ -45,15 +47,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textStatus, textName, textPlanDate, textCreateDate;
+        TextView txtStatus, txtName, txtPlanDate, txtCreatedDate,txtCategory,txtPriority;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             // Ánh xạ view
-            textName = itemView.findViewById(R.id.textName);
-            textStatus = itemView.findViewById(R.id.textStatus);
-            textPlanDate = itemView.findViewById(R.id.textPlanDate);
-            textCreateDate = itemView.findViewById(R.id.textCreateDate);
+            txtName = itemView.findViewById(R.id.txtName);
+            txtStatus = itemView.findViewById(R.id.txtStatus);
+            txtPlanDate = itemView.findViewById(R.id.txtPlanDate);
+            txtCreatedDate = itemView.findViewById(R.id.txtCreatedDate);
+            txtCategory = itemView.findViewById(R.id.txtCategory);
+            txtPriority =itemView.findViewById(R.id.txtPriority);
         }
     }
 }
