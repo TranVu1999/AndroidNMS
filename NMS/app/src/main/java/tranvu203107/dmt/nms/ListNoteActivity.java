@@ -393,7 +393,11 @@ public class ListNoteActivity extends AppCompatActivity {
     private void showListNote() {
         database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
         arrNote = new ArrayList<Note>();
-        Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate,Note.Id\n" +
+        String categoryName = "";
+        if(cateChosed.compareTo("All")!=0){
+            categoryName = "CATEGORY.Name = '"+cateChosed+"' AND ";
+        }
+        Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate\n" +
                 "FROM NOTE\n" +
                 "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
                 "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
