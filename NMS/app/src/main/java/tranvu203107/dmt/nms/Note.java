@@ -7,14 +7,16 @@ public class Note {
     private String status;
     private String planDate;
     private String createDate;
+    private String iD;
 
-    public Note(String status, String category, String name, String priority, String planDate, String createDate) {
+    public Note(String status, String category, String name, String priority, String planDate, String createDate, String iD) {
         this.name = name;
         this.category = category;
         this.priority = priority;
         this.status = status;
         this.planDate = planDate;
         this.createDate = createDate;
+        this.iD = iD;
     }
 
     public String getName() {
@@ -40,4 +42,6 @@ public class Note {
     public String getCreateDate() {
         return createDate;
     }
+
+    public int getiD(){ return Integer.parseInt(iD); }
 }

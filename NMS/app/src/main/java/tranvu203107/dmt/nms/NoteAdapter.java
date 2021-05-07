@@ -1,6 +1,7 @@
 package tranvu203107.dmt.nms;
 
 import android.content.Context;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         return listNote.size(); // trả item tại vị trí postion
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
         TextView txtStatus, txtName, txtPlanDate, txtCreatedDate,txtCategory,txtPriority;
 
         public ViewHolder(@NonNull View itemView) {
@@ -58,6 +59,17 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             txtCreatedDate = itemView.findViewById(R.id.txtCreatedDate);
             txtCategory = itemView.findViewById(R.id.txtCategory);
             txtPriority =itemView.findViewById(R.id.txtPriority);
+
+            //
+            itemView.setOnCreateContextMenuListener(this);
+        }
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+            menu.setHeaderTitle("Chọn thao tác");
+            menu.add(getAdapterPosition(), 0, 0, "Sửa");//groupId, itemId, order, title
+            menu.add(getAdapterPosition(), 1, 0, "Xóa");
+
         }
     }
 }

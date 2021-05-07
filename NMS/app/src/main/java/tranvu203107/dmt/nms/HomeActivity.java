@@ -157,7 +157,7 @@ public class HomeActivity extends AppCompatActivity {
         ArrayList<PieEntry> yEntrys = new ArrayList<>();
         Integer sum = 0;
 
-        Cursor cursor = database.rawQuery("Select Count(NOTE.Id),STATUS.Status from NOTE INNER JOIN STATUS ON NOTE.StatusId = STATUS.Id group by StatusId",null);
+        Cursor cursor = database.rawQuery("Select Count(NOTE.Id),STATUS.Status from NOTE INNER JOIN STATUS ON NOTE.StatusId = STATUS.Id where NOTE.UserId = '"+ Id +"' group by StatusId",null);
         while(cursor.moveToNext())
         {
             String sStatus = cursor.getString(1);
