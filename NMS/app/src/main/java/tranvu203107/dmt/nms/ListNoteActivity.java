@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -35,14 +37,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
 
 public class ListNoteActivity extends AppCompatActivity {
 
     int Id;
-    TextView txtNameUser;
+    TextView txtNameUser, listNoteTitle, listNoteNotify;
+    ImageView listNoteBanner;
 
     Toolbar toolbar;
     DrawerLayout drawerLayout;
@@ -104,6 +111,9 @@ public class ListNoteActivity extends AppCompatActivity {
         listViewAccount = (ListView) findViewById(R.id.listViewAccount);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
         noteListRecycler = findViewById(R.id.noteList);
+        listNoteBanner = findViewById(R.id.listNoteBanner);
+        listNoteTitle = findViewById(R.id.listNoteTitle);
+        listNoteNotify = findViewById(R.id.listNoteNotify);
 
         // Config toolbar
         setSupportActionBar(toolbar);
@@ -381,6 +391,25 @@ public class ListNoteActivity extends AppCompatActivity {
         planDateDialog.show();
     }
 
+    private void showStatistical(String strNotify){
+        listNoteTitle.setText(cateChosed);
+        listNoteNotify.setText(strNotify);
+
+
+        if(cateChosed == "Exercise"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_exercise);
+        }else if(cateChosed == "Homework"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_homework);
+        }else if(cateChosed == "Meeting"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_meeting);
+        }else if(cateChosed == "Entertainment"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_entertainment);
+        }else if(cateChosed == "My Job"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_job);
+
+        }
+    }
+
     private void showListNote() {
         database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
         arrNote = new ArrayList<Note>();
@@ -405,7 +434,21 @@ public class ListNoteActivity extends AppCompatActivity {
         cursor.close();
         noteAdapter = new NoteAdapter(getApplicationContext(), arrNote);
         noteListRecycler.setAdapter(noteAdapter);
-        }
+
+
+        String strNotify = "You have 2 missions that\nneed to be completed";
+
+        String pattern = "yyyy/MM/dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
+        String now = simpleDateFormat.format(new Date());
+        String date = simpleDateFormat.format(new Date("2021/01/10"));
+
+        Toast.makeText(ListNoteActivity.this, date.toString(), Toast.LENGTH_LONG).show();
+
+        showStatistical(strNotify);
+    }
+
     private void processCopy()
     {
         try {
