@@ -26,6 +26,7 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".ListPriorityActivity"
+            android:label="Priority Form"
             android:theme="@style/AppTheme.NoActionBar">
 
 
@@ -39,9 +40,11 @@
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".ListNoteActivity"
+            android:label="Note Form"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".CategoryActivity"
+            android:label="Category Form"
             android:theme="@style/AppTheme.NoActionBar">
 
 
@@ -50,13 +53,15 @@
         <activity
             android:name=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            android:label="Dashboard Form"
         </activity>
         <activity
             android:name=".RegisterActivity"
+            android:label="Register Form"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/app_name"
+            android:label="Login Form"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

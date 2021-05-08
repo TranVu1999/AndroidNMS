@@ -49,10 +49,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
+//import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
 
 public class ListNoteActivity extends AppCompatActivity {
-
+    String cateChosed = "";
     int Id;
     TextView txtNameUser, listNoteTitle, listNoteNotify;
     ImageView listNoteBanner;
@@ -111,7 +111,8 @@ public class ListNoteActivity extends AppCompatActivity {
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
         txtNameUser.setText("Hi, "+ getName() + " !");
-
+        // Truyền
+        cateChosed = getIntent().getStringExtra("cateChosed");
         // map
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -422,7 +423,7 @@ public class ListNoteActivity extends AppCompatActivity {
         database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
         arrNote = new ArrayList<Note>();
         String categoryName = "";
-        if(cateChosed.compareTo("All")!=0){
+        if(cateChosed!=null){
             categoryName = "CATEGORY.Name = '"+cateChosed+"' AND ";
         }
         Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate,NOTE.Id\n" +
@@ -431,7 +432,8 @@ public class ListNoteActivity extends AppCompatActivity {
                 "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
                 "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
                 "INNER JOIN USER ON NOTE.UserId = USER.Id\n" +
-                "WHERE CATEGORY.Name = '"+cateChosed+"' AND USER.Id = '" + Id + "'", null);
+                //"WHERE CATEGORY.Name = '"+cateChosed+"' AND USER.Id = '" + Id + "'", null);
+                "WHERE " + categoryName + "USER.Id = '" + Id + "'", null);
         //adapter.clear();
         //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
         while (cursor.moveToNext()) {
