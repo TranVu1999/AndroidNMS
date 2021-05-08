@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import tranvu203107.dmt.nms.model.Note;
+
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
     Context context;
     ArrayList<Note> listNote;

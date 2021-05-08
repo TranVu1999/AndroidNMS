@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import tranvu203107.dmt.nms.model.Note;
+
 public class CategoryActivity extends AppCompatActivity {
 
     String DATABASE_NAME="myDB.sqlite";
