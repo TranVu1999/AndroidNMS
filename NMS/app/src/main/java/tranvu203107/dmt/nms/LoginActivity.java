@@ -150,10 +150,12 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("LOI",ex.toString());
         }
     }
+
     private String getDatabasePath()
     {
         return getApplicationInfo().dataDir+DB_PATH_SUFFIX+DATABASE_NAME;
     }
+
     private void copyDatabaseFromAsset() {
         try{
             InputStream myInput = getAssets().open(DATABASE_NAME);
