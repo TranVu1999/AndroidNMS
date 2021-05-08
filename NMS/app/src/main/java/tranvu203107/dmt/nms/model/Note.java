@@ -1,4 +1,4 @@
-package tranvu203107.dmt.nms;
+package tranvu203107.dmt.nms.model;
 
 public class Note {
     private String name;
