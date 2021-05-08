@@ -72,7 +72,7 @@ public class ListNoteActivity extends AppCompatActivity {
     public static String statusName;
     public static String cateName;
     public static String priorityName;
-    public static String planDate;
+    public static String planDate="";
     public static int cateIndex;
     public static int priIndex;
     public static int stIndex;
@@ -302,7 +302,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 cateIndex=position+1;
                 cateName= arrOptionCate.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick category "+ cateName , Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -315,7 +314,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 priIndex=position+1;
                 priorityName = arrOptionPriority.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick priority " + priorityName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -328,7 +326,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 stIndex=position+1;
                 statusName = arrOptionStatus.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick status " + statusName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -472,13 +469,26 @@ public class ListNoteActivity extends AppCompatActivity {
         newValues.put("PlanDate",planDate);
         newValues.put("CreatedDate",java.time.LocalDate.now().toString());
 
-        long kq =ListNoteActivity.database.insert("NOTE",null,newValues);
-        if(kq>0) {
-            Toast.makeText(ListNoteActivity.this, "Thêm thành công", Toast.LENGTH_LONG).show();
-            showListNote();
+        if(!noteName.isEmpty() && !planDate.isEmpty())
+        {
+            long kq =ListNoteActivity.database.insert("NOTE",null,newValues);
+            if(kq>0) {
+                Toast.makeText(ListNoteActivity.this, "Add Done", Toast.LENGTH_LONG).show();
+                showListNote();
+            }
+            else
+                Toast.makeText(ListNoteActivity.this,"Add Failed",Toast.LENGTH_LONG).show();
         }
         else
-            Toast.makeText(ListNoteActivity.this,"Thêm thất bại",Toast.LENGTH_LONG).show();
+        {
+            if(noteName.isEmpty())
+            {
+                Toast.makeText(ListNoteActivity.this,"Note name must fill",Toast.LENGTH_LONG).show();
+            }
+            else
+            if(planDate.isEmpty())
+                Toast.makeText(ListNoteActivity.this,"Plan date must be chosen",Toast.LENGTH_LONG).show();
+        }
     }
     public void eCloseAddNote(View view)
     {
