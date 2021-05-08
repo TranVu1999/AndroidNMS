@@ -107,10 +107,6 @@ public class ListNoteActivity extends AppCompatActivity {
         addControls();
         processCopy();
 
-        txtNameUser = (TextView) findViewById(R.id.txtNameUser);
-        Id = getIntent().getIntExtra("Id", 2);
-        txtNameUser.setText("Hi, "+ getName() + " !");
-
         //truyen id
         txtNameUser = (TextView) findViewById(R.id.txtNameUser);
         Id = getIntent().getIntExtra("Id", 2);
