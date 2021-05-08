@@ -49,6 +49,7 @@
                             android:paddingLeft="16dp">
 
                             <TextView
+                                android:id="@+id/listNoteTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="My Job"
@@ -56,6 +57,7 @@
                                 android:textStyle="bold"/>
 
                             <TextView
+                                android:id="@+id/listNoteNotify"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="You have 2 missions that\nneed to be completed"
@@ -64,6 +66,7 @@
                         </LinearLayout>
 
                         <ImageView
+                            android:id="@+id/listNoteBanner"
                             android:layout_width="200dp"
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_action_job"
