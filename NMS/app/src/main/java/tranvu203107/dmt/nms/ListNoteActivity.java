@@ -384,7 +384,7 @@ public class ListNoteActivity extends AppCompatActivity {
                                             int dayOfMonth) {
                 String  curDate = String.valueOf(dayOfMonth);
                 String  Year = String.valueOf(year);
-                String  Month = String.valueOf(month);
+                String  Month = String.valueOf(month + 1);
 
                 planDate = curDate+'/'+Month+'/'+Year;
             }
@@ -453,16 +453,35 @@ public class ListNoteActivity extends AppCompatActivity {
         noteListRecycler.setAdapter(noteAdapter);
 
 
-        String strNotify = "You have 2 missions that\nneed to be completed";
 
-        String pattern = "yyyy/MM/dd";
+
+        String pattern = "dd/MM/yyyy";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
-        String now = simpleDateFormat.format(new Date());
-        String date = simpleDateFormat.format(new Date("2021/01/10"));
 
-        Toast.makeText(ListNoteActivity.this, date.toString(), Toast.LENGTH_LONG).show();
+        int lengthNote = arrNote.size();
+        int count = 0;
+        for(int i = 0; i < lengthNote; i++){
+            String nowStr = simpleDateFormat.format(new Date());
+            String[] arrTimeNow = nowStr.split("/");
 
+            String []arrTimePlaneDate = arrNote.get(i).getPlanDate().split("/");
+
+            Boolean flag = false;
+            if(Integer.parseInt(arrTimePlaneDate[2]) < Integer.parseInt(arrTimeNow[2])){
+                flag = true;
+            }else if (Integer.parseInt(arrTimePlaneDate[1]) < Integer.parseInt(arrTimeNow[1])){
+                flag = true;
+            }else if (Integer.parseInt(arrTimePlaneDate[0]) < Integer.parseInt(arrTimeNow[0])){
+                flag = true;
+            }
+
+            if(flag){
+                count += 1;
+            }
+        }
+
+        String strNotify = "You have " + count + " missions that\nneed to be completed";
         showStatistical(strNotify);
     }
 

@@ -12,12 +12,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CategoryActivity extends AppCompatActivity {
 
@@ -25,7 +28,9 @@ public class CategoryActivity extends AppCompatActivity {
     String DB_PATH_SUFFIX="/databases/";
     SQLiteDatabase database = null;
     int Id;
-    TextView txtNameUser;
+    TextView txtNameUser, listNoteTitle, listNoteNotify;
+    ImageView listNoteBanner;
+
     Toolbar toolbar;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -57,6 +62,10 @@ public class CategoryActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listView);
         listViewAccount = (ListView) findViewById(R.id.listViewAccount);
         navigationView = (NavigationView) findViewById(R.id.navigationView);
+
+        listNoteBanner = findViewById(R.id.listNoteBanner);
+        listNoteTitle = findViewById(R.id.listNoteTitle);
+        listNoteNotify = findViewById(R.id.listNoteNotify);
 
         // Config toolbar
         setSupportActionBar(toolbar);
@@ -155,6 +164,9 @@ public class CategoryActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        showStatistical();
     }
 
     private String getName(){
@@ -222,4 +234,134 @@ public class CategoryActivity extends AppCompatActivity {
         txtEntertainment = (TextView)findViewById(R.id.txtEntertainment);
         txtMyJob = (TextView)findViewById(R.id.txtMyJob);
     }
+
+    private void showStatistical() {
+        database = openOrCreateDatabase(DATABASE_NAME, MODE_PRIVATE, null);
+        ArrayList<Note>arrNote = new ArrayList<Note>();
+
+        Cursor cursor = database.rawQuery("SELECT USER.Id, Status.status,CATEGORY.name,NOTE.Name,PRIORITY.Priority,NOTE.PlanDate,NOTE.CreatedDate,NOTE.Id\n" +
+                "FROM NOTE\n" +
+                "INNER JOIN CATEGORY ON NOTE.CateId =CATEGORY.Id\n" +
+                "INNER JOIN Priority ON NOTE.PriorityId = Priority.Id\n" +
+                "INNER JOIN Status ON NOTE.StatusId=Status.id\n" +
+                "INNER JOIN USER ON NOTE.UserId = USER.Id\n" +
+                "WHERE USER.Id = '" + Id + "'", null);
+        //adapter.clear();
+        //Toast.makeText(MainActivity.this,"Da vao",Toast.LENGTH_LONG).show();
+        while (cursor.moveToNext()) {
+            String status = cursor.getString(1);
+            String cateName = cursor.getString(2);
+            String noteName = cursor.getString(3);
+            String priorityName = cursor.getString(4);
+            String planDate = cursor.getString(5);
+            String createdDate = cursor.getString(6);
+            String iD = cursor.getString(7);
+            arrNote.add(new Note(status, cateName, noteName, priorityName, planDate, createdDate,iD));
+        }
+        cursor.close();
+
+        int amountExercise = countLateDeadline(arrNote, "Exercise");
+        int amountHomework = countLateDeadline(arrNote, "Homework");
+        int amountMeeting = countLateDeadline(arrNote, "Meeting");
+        int amountEntertainment = countLateDeadline(arrNote, "Entertainment");
+        int amountMyBob = countLateDeadline(arrNote, "My Job");
+
+        // check max
+        int maxAmountDeadline = amountMyBob;
+        String categoryDeadline = "My Job";
+
+
+        // check amountExercise is max
+        if(amountExercise >= amountHomework &&
+                amountExercise >= amountMeeting &&
+                amountExercise >= amountEntertainment &&
+                amountExercise >= amountMyBob
+        ){
+            categoryDeadline = "Exercise";
+            maxAmountDeadline = amountExercise;
+        }
+
+        // check amountHomework is max
+        if(amountHomework >= amountExercise &&
+                amountHomework >= amountMeeting &&
+                amountHomework >= amountEntertainment &&
+                amountHomework >= amountMyBob
+        ){
+            categoryDeadline = "Homework";
+            maxAmountDeadline = amountHomework;
+        }
+
+        // check amountMeeting is max
+        if(amountMeeting >= amountExercise &&
+                amountMeeting >= amountHomework &&
+                amountMeeting >= amountEntertainment &&
+                amountMeeting >= amountMyBob
+        ){
+            categoryDeadline = "Meeting";
+            maxAmountDeadline = amountMeeting;
+        }
+
+        // check amountEntertainment is max
+        if(amountEntertainment >= amountExercise &&
+                amountEntertainment >= amountHomework &&
+                amountEntertainment >= amountMeeting &&
+                amountEntertainment >= amountMyBob
+        ){
+            categoryDeadline = "Entertainment";
+            maxAmountDeadline = amountEntertainment;
+        }
+
+
+
+        String strNotify = "You have " + maxAmountDeadline + " missions that\nneed to be completed";
+        listNoteTitle.setText(categoryDeadline);
+        listNoteNotify.setText(strNotify);
+
+
+        if(categoryDeadline == "Exercise"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_exercise);
+        }else if(categoryDeadline == "Homework"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_homework);
+        }else if(categoryDeadline == "Meeting"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_meeting);
+        }else if(categoryDeadline == "Entertainment"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_entertainment);
+        }else if(categoryDeadline == "My Job"){
+            listNoteBanner.setImageResource(R.drawable.ic_action_job);
+
+        }
+    }
+
+    private int countLateDeadline (ArrayList<Note>arrNote, String category){
+        int count = 0;
+        String pattern = "dd/MM/yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        int lengthNote = arrNote.size();
+
+        for(int i = 0; i < lengthNote; i++){
+            if(arrNote.get(i).getCategory().equals(category)){
+                String nowStr = simpleDateFormat.format(new Date());
+                String[] arrTimeNow = nowStr.split("/");
+
+                String []arrTimePlaneDate = arrNote.get(i).getPlanDate().split("/");
+
+                Boolean flag = false;
+                if(Integer.parseInt(arrTimePlaneDate[2]) < Integer.parseInt(arrTimeNow[2])){
+                    flag = true;
+                }else if (Integer.parseInt(arrTimePlaneDate[1]) < Integer.parseInt(arrTimeNow[1])){
+                    flag = true;
+                }else if (Integer.parseInt(arrTimePlaneDate[0]) < Integer.parseInt(arrTimeNow[0])){
+                    flag = true;
+                }
+
+                if(flag){
+                    count += 1;
+                }
+            }
+
+        }
+
+        return count;
+    }
 }
+
