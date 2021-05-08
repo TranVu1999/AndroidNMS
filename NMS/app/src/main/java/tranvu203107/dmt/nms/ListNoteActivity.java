@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -39,6 +38,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+
+import tranvu203107.dmt.nms.model.Note;
 
 import static tranvu203107.dmt.nms.CategoryActivity.cateChosed;
 
@@ -76,7 +77,7 @@ public class ListNoteActivity extends AppCompatActivity {
     public static String statusName;
     public static String cateName;
     public static String priorityName;
-    public static String planDate;
+    public static String planDate="";
     public static int cateIndex;
     public static int priIndex;
     public static int stIndex;
@@ -309,7 +310,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 cateIndex=position+1;
                 cateName= arrOptionCate.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick category "+ cateName , Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -322,7 +322,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 priIndex=position+1;
                 priorityName = arrOptionPriority.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick priority " + priorityName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -335,7 +334,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 stIndex=position+1;
                 statusName = arrOptionStatus.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick status " + statusName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -373,7 +371,7 @@ public class ListNoteActivity extends AppCompatActivity {
                 String  Year = String.valueOf(year);
                 String  Month = String.valueOf(month);
 
-                planDate = curDate+'/'+Month+'/'+Year;
+                planDate = Year+'-'+Month+'-'+curDate;
             }
         });
 
@@ -468,7 +466,6 @@ public class ListNoteActivity extends AppCompatActivity {
     public void SaveDataAdd(View view) {
         String noteName =editNoteName.getText().toString();
         ContentValues newValues = new ContentValues();
-        // newValues.put("Id",8);
         newValues.put("Name",noteName);
         newValues.put("UserId",Id);
         newValues.put("CateId",cateIndex);
@@ -476,14 +473,26 @@ public class ListNoteActivity extends AppCompatActivity {
         newValues.put("StatusId",stIndex);
         newValues.put("PlanDate",planDate);
         newValues.put("CreatedDate",java.time.LocalDate.now().toString());
-
-        long kq =ListNoteActivity.database.insert("NOTE",null,newValues);
-        if(kq>0) {
-            Toast.makeText(ListNoteActivity.this, "Thêm thành công", Toast.LENGTH_LONG).show();
-            showListNote();
+        if(!noteName.isEmpty() && !planDate.isEmpty())
+        {
+            long kq =ListNoteActivity.database.insert("NOTE",null,newValues);
+            if(kq>0) {
+                Toast.makeText(ListNoteActivity.this, "Add Done", Toast.LENGTH_LONG).show();
+                showListNote();
+            }
+            else
+                Toast.makeText(ListNoteActivity.this,"Add Failed",Toast.LENGTH_LONG).show();
         }
         else
-            Toast.makeText(ListNoteActivity.this,"Thêm thất bại",Toast.LENGTH_LONG).show();
+        {
+            if(noteName.isEmpty())
+            {
+                Toast.makeText(ListNoteActivity.this,"Note name must fill",Toast.LENGTH_LONG).show();
+            }
+            else
+                if(planDate.isEmpty())
+                    Toast.makeText(ListNoteActivity.this,"Plan date must be chosen",Toast.LENGTH_LONG).show();
+        }
     }
     public void eCloseAddNote(View view)
     {
@@ -543,7 +552,7 @@ public class ListNoteActivity extends AppCompatActivity {
                 // delete note
                 database.delete("Note","id" + " = ?", new String[]{String.valueOf(id)});
                 showListNote();
-                Toast.makeText(getApplicationContext(), "Đã xóa",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Deleted",Toast.LENGTH_LONG).show();
                 dialog.dismiss();
             }
         });
@@ -652,7 +661,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 cateIndex=position+1;
                 cateName= arrOptionCate.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick category "+ cateName , Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -665,7 +673,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 priIndex=position+1;
                 priorityName = arrOptionPriority.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick priority " + priorityName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -678,7 +685,6 @@ public class ListNoteActivity extends AppCompatActivity {
                 // your code here
                 stIndex=position+1;
                 statusName = arrOptionStatus.get(position).title.toString();
-                Toast.makeText(getApplicationContext(), "You pick status " + statusName, Toast.LENGTH_LONG).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -710,11 +716,11 @@ public class ListNoteActivity extends AppCompatActivity {
 
                 long kq =ListNoteActivity.database.update("NOTE", newValues,"id" + " = ?",new String[]{String.valueOf(tempNote.getiD())});
                 if(kq>0) {
-                    Toast.makeText(ListNoteActivity.this, "Sửa thành công", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ListNoteActivity.this, "Edit Successful", Toast.LENGTH_LONG).show();
                     showListNote();
                 }
                 else
-                    Toast.makeText(ListNoteActivity.this,"Sửa thất bại",Toast.LENGTH_LONG).show();
+                    Toast.makeText(ListNoteActivity.this,"Edit Failed",Toast.LENGTH_LONG).show();
             }
         });
 
